@@ -4,8 +4,8 @@ services:
   # Next.jsフロントエンド
   frontend:
     build:
-      context: ./containers/frontend
-      dockerfile: Dockerfile
+      context: ./repos/ahamo-dummy-demo2-frontend-workspace
+      dockerfile: Dockerfile.e2e
     ports:
       - "3000:3000"
     environment:
@@ -19,7 +19,7 @@ services:
   # API Gateway (ポート3001)
   api-gateway:
     build:
-      context: ./containers/backend/api-gateway
+      context: ./repos/ahamo-dummy-demo2-api-gateway-service
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
@@ -34,7 +34,7 @@ services:
   # 認証サービス (ポート8080)
   auth-service:
     build:
-      context: ./containers/backend/auth-service
+      context: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
       dockerfile: Dockerfile
     ports:
       - "8080:8080"

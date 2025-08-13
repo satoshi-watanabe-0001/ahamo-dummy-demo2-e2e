@@ -4,7 +4,7 @@ set -e
 
 echo "Starting E2E test execution..."
 
-echo "Building Docker containers..."
+echo "Building containers from source repositories..."
 docker-compose -f docker-compose.e2e.yml build
 
 echo "Starting E2E environment..."

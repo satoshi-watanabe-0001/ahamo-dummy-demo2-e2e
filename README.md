@@ -163,6 +163,33 @@ docker-compose -f docker-compose.e2e.yml logs frontend
 docker-compose -f docker-compose.e2e.yml logs auth-service
 ```
 
+## マルチリポジトリビルド
+
+このE2E環境は、CI実行時に別リポジトリのソースコードを動的にチェックアウトしてコンテナをビルドします：
+
+- **フロントエンド**: `ahamo-dummy-demo2-frontend-workspace` (Next.js standalone build)
+- **API Gateway**: `ahamo-dummy-demo2-api-gateway-service` (プレースホルダー実装)
+- **認証サービス**: `-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service` (Spring Boot)
+
+### ローカル実行
+
+```bash
+# リポジトリディレクトリを作成
+mkdir -p repos
+
+# 各リポジトリをクローン
+git clone https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace.git repos/ahamo-dummy-demo2-frontend-workspace
+git clone https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service.git repos/ahamo-dummy-demo2-api-gateway-service
+git clone https://github.com/satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service.git repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+
+# E2E環境起動
+docker-compose -f docker-compose.e2e.yml up -d
+```
+
+### 前提条件
+
+各リポジトリにDockerfileが存在している必要があります。フロントエンドリポジトリには`Dockerfile.e2e`を配置してください。
+
 ## 関連リポジトリ
 
 - [ahamo-dummy-demo2-frontend-workspace](https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace)
