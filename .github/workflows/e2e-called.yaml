@@ -154,6 +154,30 @@ jobs:
           repository: satoshi-watanabe-0001/ahamo-dummy-demo2-e2e
           ref: main
 
+      - name: Checkout Frontend Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace
+          ref: ${{ inputs.BRANCH_NAME }}
+          path: repos/ahamo-dummy-demo2-frontend-workspace
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout API Gateway Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service
+          ref: main
+          path: repos/ahamo-dummy-demo2-api-gateway-service
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Auth Service Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          ref: main
+          path: repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup Test Environment
         run: |
           docker-compose -f docker-compose.e2e.yml up -d
