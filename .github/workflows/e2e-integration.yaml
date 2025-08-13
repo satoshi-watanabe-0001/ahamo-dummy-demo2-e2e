@@ -18,6 +18,36 @@ jobs:
       - name: Checkout E2E Repository
         uses: actions/checkout@v4
 
+      - name: Pull ECR Images
+        id: pull-images
+        run: |
+          echo "Pulling container images from ECR..."
+          
+          AWS_REGION="${{ vars.AWS_REGION || 'ap-northeast-1' }}"
+          AWS_ACCOUNT_ID="${{ vars.AWS_ACCOUNT_ID }}"
+          VERSION_TAG="${{ github.sha }}"
+          
+          if [[ -n "$AWS_ACCOUNT_ID" ]]; then
+            ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+            
+            echo "Logging in to Amazon ECR..."
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+            
+            echo "Pulling images..."
+            docker pull $ECR_REGISTRY/ahamo-dummy-demo2:latest || echo "Frontend image not available, using local fallback"
+            docker pull $ECR_REGISTRY/ahamo-dummy-demo2-api-gateway-service:latest || echo "API Gateway image not available, using local fallback"
+            docker pull $ECR_REGISTRY/ahamo-dummy-demo2-auth-service:latest || echo "Auth service image not available, using local fallback"
+            
+            echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
+            echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
+            echo "VERSION_TAG=latest" >> $GITHUB_ENV
+          else
+            echo "AWS_ACCOUNT_ID not configured, using local images"
+          fi
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Start E2E Environment
         run: |
           docker-compose -f docker-compose.e2e.yml up -d

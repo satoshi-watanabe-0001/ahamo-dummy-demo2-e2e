@@ -163,6 +163,26 @@ docker-compose -f docker-compose.e2e.yml logs frontend
 docker-compose -f docker-compose.e2e.yml logs auth-service
 ```
 
+## ECR統合
+
+このE2E環境は、別リポジトリで構築されたコンテナイメージをECRから取得して使用します：
+
+- **フロントエンド**: `ahamo-dummy-demo2` (ahamo-dummy-demo2-frontend-workspace)
+- **API Gateway**: `ahamo-dummy-demo2-api-gateway-service` (ahamo-dummy-demo2-api-gateway-service)
+- **認証サービス**: `ahamo-dummy-demo2-auth-service` (-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service)
+
+### 環境変数設定
+
+```bash
+export AWS_ACCOUNT_ID=123456789012
+export AWS_REGION=ap-northeast-1
+export VERSION_TAG=latest
+```
+
+### 前提条件
+
+各リポジトリでECRへのイメージプッシュが設定されている必要があります。
+
 ## 関連リポジトリ
 
 - [ahamo-dummy-demo2-frontend-workspace](https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace)

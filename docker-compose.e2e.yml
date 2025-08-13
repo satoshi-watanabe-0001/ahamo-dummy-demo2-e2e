@@ -3,9 +3,7 @@ version: '3.8'
 services:
   # Next.jsフロントエンド
   frontend:
-    build:
-      context: ./containers/frontend
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID:-123456789012}.dkr.ecr.${AWS_REGION:-ap-northeast-1}.amazonaws.com/ahamo-dummy-demo2:${VERSION_TAG:-latest}
     ports:
       - "3000:3000"
     environment:
@@ -18,9 +16,7 @@ services:
 
   # API Gateway (ポート3001)
   api-gateway:
-    build:
-      context: ./containers/backend/api-gateway
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID:-123456789012}.dkr.ecr.${AWS_REGION:-ap-northeast-1}.amazonaws.com/ahamo-dummy-demo2-api-gateway-service:${VERSION_TAG:-latest}
     ports:
       - "3001:3001"
     environment:
@@ -33,9 +29,7 @@ services:
 
   # 認証サービス (ポート8080)
   auth-service:
-    build:
-      context: ./containers/backend/auth-service
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID:-123456789012}.dkr.ecr.${AWS_REGION:-ap-northeast-1}.amazonaws.com/ahamo-dummy-demo2-auth-service:${VERSION_TAG:-latest}
     ports:
       - "8080:8080"
     environment:

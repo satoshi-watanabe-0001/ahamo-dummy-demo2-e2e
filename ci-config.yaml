@@ -1,14 +1,14 @@
 app:
   DEPLOY_TARGET: ecs
-  CONTAINERS:
-    - IMAGE_NAME: ahamo-e2e-frontend
-      DOCKERFILE_PATH: containers/frontend/Dockerfile
+  ECR_IMAGES:
+    - IMAGE_NAME: ahamo-dummy-demo2
+      ECR_REPOSITORY: ahamo-dummy-demo2
       FVULS_UUID: $(uuidgen)
-    - IMAGE_NAME: ahamo-e2e-auth-service
-      DOCKERFILE_PATH: containers/backend/auth-service/Dockerfile
+    - IMAGE_NAME: ahamo-dummy-demo2-auth-service
+      ECR_REPOSITORY: ahamo-dummy-demo2-auth-service
       FVULS_UUID: $(uuidgen)
-    - IMAGE_NAME: ahamo-e2e-api-gateway
-      DOCKERFILE_PATH: containers/backend/api-gateway/Dockerfile
+    - IMAGE_NAME: ahamo-dummy-demo2-api-gateway-service
+      ECR_REPOSITORY: ahamo-dummy-demo2-api-gateway-service
       FVULS_UUID: $(uuidgen)
   TEST_SHELL_PATH: .github/scripts/e2e-test.sh
 
