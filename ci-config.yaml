@@ -1,0 +1,54 @@
+app:
+  DEPLOY_TARGET: ecs
+  CONTAINERS:
+    - IMAGE_NAME: ahamo-e2e-frontend
+      DOCKERFILE_PATH: containers/frontend/Dockerfile
+      FVULS_UUID: $(uuidgen)
+    - IMAGE_NAME: ahamo-e2e-auth-service
+      DOCKERFILE_PATH: containers/backend/auth-service/Dockerfile
+      FVULS_UUID: $(uuidgen)
+    - IMAGE_NAME: ahamo-e2e-api-gateway
+      DOCKERFILE_PATH: containers/backend/api-gateway/Dockerfile
+      FVULS_UUID: $(uuidgen)
+  TEST_SHELL_PATH: .github/scripts/e2e-test.sh
+
+build:
+  commands:
+    - 'docker-compose -f docker-compose.e2e.yml build'
+    - 'npm ci'
+
+test:
+  coverage:
+    tool: 'playwright'
+    threshold: 80
+    report-path: 'playwright-report/results.json'
+  
+  e2e:
+    report-path: 'playwright-report/results.json'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: e2e_test
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d e2e_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+
+environment:
+  NODE_ENV: test
+  NEXT_PUBLIC_API_URL: http://localhost:3001
+  DATABASE_URL: jdbc:postgresql://localhost:5432/e2e_test
+  JWT_SECRET: dGVzdFNlY3JldEtleUZvckpXVFRva2VuVGVzdGluZ1B1cnBvc2VzMTIzNDU2Nzg5MA==
+
+artifacts:
+  - name: 'e2e-test-reports'
+    path: 'playwright-report/'
+  - name: 'e2e-screenshots'
+    path: 'test-results/'

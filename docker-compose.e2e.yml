@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Next.jsフロントエンド
+  frontend:
+    build:
+      context: ./containers/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:3001
+      - NODE_ENV=test
+    depends_on:
+      - api-gateway
+    networks:
+      - e2e-network
+
+  # API Gateway (ポート3001)
+  api-gateway:
+    build:
+      context: ./containers/backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=e2e
+      - AUTH_SERVICE_URL=http://auth-service:8080
+    depends_on:
+      - auth-service
+    networks:
+      - e2e-network
+
+  # 認証サービス (ポート8080)
+  auth-service:
+    build:
+      context: ./containers/backend/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=e2e
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/e2e_test
+      - DB_USERNAME=testuser
+      - DB_PASSWORD=testpass
+      - JWT_SECRET=myVerySecretJWTKeyForAhamoDummyDemo2AuthService2024
+    depends_on:
+      - postgres
+    networks:
+      - e2e-network
+
+  # PostgreSQLデータベース
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=e2e_test
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./containers/shared/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - e2e-network
+
+networks:
+  e2e-network:
+    driver: bridge
