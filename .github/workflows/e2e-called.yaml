@@ -34,6 +34,12 @@ on:
         description: "Test success rate percentage"
         value: ${{ jobs.e2e-execution.outputs.success_rate }}
 
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  issues: write
+
 jobs:
   e2e-environment-setup:
     runs-on: ubuntu-latest
@@ -178,10 +184,33 @@ jobs:
           path: repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Browser Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgles2-mesa-dev \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libgstreamer-plugins-bad1.0-dev \
+            libgstreamer-plugins-good1.0-dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Playwright Dependencies
+        run: |
+          npm install
+          npx playwright install
+          sudo npx playwright install-deps
+
       - name: Setup Test Environment
         run: |
+          docker-compose -f docker-compose.e2e.yml build
           docker-compose -f docker-compose.e2e.yml up -d
-          sleep 30
+          sleep 60
 
       - name: Execute E2E Tests
         id: test-execution
