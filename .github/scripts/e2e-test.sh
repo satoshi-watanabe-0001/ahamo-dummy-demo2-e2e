@@ -2,13 +2,12 @@
 
 set -e
 
-export AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-123456789012}
-export AWS_REGION=${AWS_REGION:-ap-northeast-1}
-export VERSION_TAG=${VERSION_TAG:-latest}
-
 echo "Starting E2E test execution..."
 
-echo "Starting E2E environment with ECR images..."
+echo "Building containers from source repositories..."
+docker-compose -f docker-compose.e2e.yml build
+
+echo "Starting E2E environment..."
 docker-compose -f docker-compose.e2e.yml up -d
 
 echo "Waiting for services to be ready..."

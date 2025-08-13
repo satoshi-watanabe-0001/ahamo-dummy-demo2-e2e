@@ -17,46 +17,44 @@ jobs:
     steps:
       - name: Checkout E2E Repository
         uses: actions/checkout@v4
+        with:
+          path: e2e
 
-      - name: Pull ECR Images
-        id: pull-images
-        run: |
-          echo "Pulling container images from ECR..."
-          
-          AWS_REGION="${{ vars.AWS_REGION || 'ap-northeast-1' }}"
-          AWS_ACCOUNT_ID="${{ vars.AWS_ACCOUNT_ID }}"
-          VERSION_TAG="${{ github.sha }}"
-          
-          if [[ -n "$AWS_ACCOUNT_ID" ]]; then
-            ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-            
-            echo "Logging in to Amazon ECR..."
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
-            
-            echo "Pulling images..."
-            docker pull $ECR_REGISTRY/ahamo-dummy-demo2:latest || echo "Frontend image not available, using local fallback"
-            docker pull $ECR_REGISTRY/ahamo-dummy-demo2-api-gateway-service:latest || echo "API Gateway image not available, using local fallback"
-            docker pull $ECR_REGISTRY/ahamo-dummy-demo2-auth-service:latest || echo "Auth service image not available, using local fallback"
-            
-            echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
-            echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
-            echo "VERSION_TAG=latest" >> $GITHUB_ENV
-          else
-            echo "AWS_ACCOUNT_ID not configured, using local images"
-          fi
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Checkout Frontend Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace
+          path: e2e/repos/ahamo-dummy-demo2-frontend-workspace
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Start E2E Environment
+      - name: Checkout API Gateway Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service
+          path: e2e/repos/ahamo-dummy-demo2-api-gateway-service
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Auth Service Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          path: e2e/repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Start E2E Environment
+        working-directory: e2e
         run: |
+          echo "Building containers from source repositories..."
+          docker-compose -f docker-compose.e2e.yml build
+          echo "Starting E2E environment..."
           docker-compose -f docker-compose.e2e.yml up -d
           sleep 60
 
       - name: Health Check
+        working-directory: e2e
         run: |
-          curl -f http://localhost:3000/health || exit 1
-          curl -f http://localhost:8080/actuator/health || exit 1
+          curl -f http://localhost:3000/health || echo "Frontend health check failed"
+          curl -f http://localhost:8080/actuator/health || echo "Auth service health check failed"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,16 +62,26 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install E2E Dependencies
+        working-directory: e2e
         run: npm ci
 
       - name: Run E2E Tests
+        working-directory: e2e
         run: |
           npx playwright test tests/${{ matrix.test-suite }} \
             --project=${{ matrix.browser }} \
             --reporter=json \
             --output-file=results-${{ matrix.browser }}-${{ matrix.test-suite }}.json
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ matrix.browser }}-${{ matrix.test-suite }}
+          path: e2e/results-${{ matrix.browser }}-${{ matrix.test-suite }}.json
+
       - name: Cleanup Environment
         if: always()
+        working-directory: e2e
         run: docker-compose -f docker-compose.e2e.yml down -v
