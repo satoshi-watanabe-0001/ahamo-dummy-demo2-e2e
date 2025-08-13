@@ -1,0 +1,227 @@
+name: E2E Testing Called Workflow
+
+on:
+  workflow_call:
+    inputs:
+      ENV:
+        required: true
+        type: string
+        description: "Environment name (dev/test/prod/e2e)"
+      TRIGGER_REPO:
+        required: true
+        type: string
+        description: "Repository that triggered the E2E test (frontend/backend/api-gateway)"
+      BRANCH_NAME:
+        required: false
+        type: string
+        default: "main"
+        description: "Branch name to test"
+      TEST_SUITE:
+        required: false
+        type: string
+        default: "all"
+        description: "Test suite to run (all/user-flows/api-integration/cross-service)"
+      BROWSER:
+        required: false
+        type: string
+        default: "all"
+        description: "Browser to test (all/chromium/firefox/webkit)"
+    outputs:
+      TEST_RESULTS:
+        description: "E2E test execution results"
+        value: ${{ jobs.e2e-execution.outputs.test_results }}
+      SUCCESS_RATE:
+        description: "Test success rate percentage"
+        value: ${{ jobs.e2e-execution.outputs.success_rate }}
+
+jobs:
+  e2e-environment-setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environment_ready: ${{ steps.health-check.outputs.ready }}
+    steps:
+      - name: Checkout E2E Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-e2e
+          ref: main
+
+      - name: Checkout Frontend Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace
+          ref: ${{ inputs.BRANCH_NAME }}
+          path: repos/ahamo-dummy-demo2-frontend-workspace
+
+      - name: Checkout API Gateway Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service
+          ref: main
+          path: repos/ahamo-dummy-demo2-api-gateway-service
+
+      - name: Checkout Auth Service Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          ref: main
+          path: repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+
+      - name: Install Browser Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgles2-mesa-dev \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libgstreamer-plugins-bad1.0-dev \
+            libgstreamer-plugins-good1.0-dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Playwright Dependencies
+        run: |
+          npm install
+          npx playwright install
+          sudo npx playwright install-deps
+
+      - name: Start E2E Environment
+        run: |
+          docker-compose -f docker-compose.e2e.yml build
+          docker-compose -f docker-compose.e2e.yml up -d
+          sleep 60
+
+      - name: Health Check Services
+        id: health-check
+        run: |
+          echo "=== サービスヘルスチェック ===" 
+          
+          if curl -f http://localhost:3000/health; then
+            echo "✅ フロントエンド正常"
+            frontend_status="ok"
+          else
+            echo "❌ フロントエンド異常"
+            frontend_status="error"
+          fi
+          
+          if curl -f http://localhost:3001/; then
+            echo "✅ API Gateway正常"
+            api_gateway_status="ok"
+          else
+            echo "❌ API Gateway異常"
+            api_gateway_status="error"
+          fi
+          
+          if curl -f http://localhost:8080/ || curl -f http://localhost:8080/actuator/health; then
+            echo "✅ 認証サービス正常"
+            auth_status="ok"
+          else
+            echo "❌ 認証サービス異常"
+            auth_status="error"
+          fi
+          
+          if [[ "$frontend_status" == "ok" && "$api_gateway_status" == "ok" && "$auth_status" == "ok" ]]; then
+            echo "ready=true" >> $GITHUB_OUTPUT
+            echo "✅ 全サービス正常 - E2Eテスト実行可能"
+          else
+            echo "ready=false" >> $GITHUB_OUTPUT
+            echo "❌ サービス異常 - E2Eテスト実行不可"
+            exit 1
+          fi
+
+  e2e-execution:
+    needs: e2e-environment-setup
+    runs-on: ubuntu-latest
+    if: needs.e2e-environment-setup.outputs.environment_ready == 'true'
+    outputs:
+      test_results: ${{ steps.test-execution.outputs.results }}
+      success_rate: ${{ steps.test-execution.outputs.success_rate }}
+    strategy:
+      matrix:
+        browser: ${{ inputs.BROWSER == 'all' && fromJson('["chromium", "firefox", "webkit"]') || fromJson(format('["{0}"]', inputs.BROWSER)) }}
+        test-suite: ${{ inputs.TEST_SUITE == 'all' && fromJson('["user-flows", "api-integration", "cross-service"]') || fromJson(format('["{0}"]', inputs.TEST_SUITE)) }}
+    steps:
+      - name: Checkout E2E Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-e2e
+          ref: main
+
+      - name: Setup Test Environment
+        run: |
+          docker-compose -f docker-compose.e2e.yml up -d
+          sleep 30
+
+      - name: Execute E2E Tests
+        id: test-execution
+        run: |
+          echo "=== E2Eテスト実行: ${{ matrix.browser }} - ${{ matrix.test-suite }} ==="
+          
+          if npx playwright test tests/playwright/${{ matrix.test-suite }} \
+            --project=${{ matrix.browser }} \
+            --reporter=json,html; then
+            test_status="success"
+          else
+            test_status="failed"
+          fi
+          
+          if [ -f "test-results/.last-run.json" ]; then
+            total_tests=$(jq -r '.failedTests | length' test-results/.last-run.json 2>/dev/null || echo "0")
+            failed_tests=$(jq -r '.failedTests | length' test-results/.last-run.json 2>/dev/null || echo "0")
+            passed_tests=$((total_tests - failed_tests))
+            
+            if [ "$total_tests" -gt 0 ]; then
+              success_rate=$(echo "scale=2; $passed_tests * 100 / $total_tests" | bc)
+            else
+              success_rate="0"
+            fi
+          else
+            success_rate="0"
+          fi
+          
+          echo "results={\"browser\":\"${{ matrix.browser }}\",\"suite\":\"${{ matrix.test-suite }}\",\"status\":\"$test_status\",\"success_rate\":\"$success_rate\"}" >> $GITHUB_OUTPUT
+          echo "success_rate=$success_rate" >> $GITHUB_OUTPUT
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-${{ matrix.browser }}-${{ matrix.test-suite }}
+          path: |
+            test-results/
+            playwright-report/
+            *.json
+
+      - name: Cleanup Environment
+        if: always()
+        run: |
+          docker-compose -f docker-compose.e2e.yml down -v
+          docker system prune -f
+
+  e2e-report:
+    needs: [e2e-environment-setup, e2e-execution]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Generate E2E Test Report
+        run: |
+          echo "# E2Eテスト実行レポート" > e2e-summary.md
+          echo "" >> e2e-summary.md
+          echo "**実行日時**: $(date)" >> e2e-summary.md
+          echo "**トリガーリポジトリ**: ${{ inputs.TRIGGER_REPO }}" >> e2e-summary.md
+          echo "**ブランチ**: ${{ inputs.BRANCH_NAME }}" >> e2e-summary.md
+          echo "**環境**: ${{ inputs.ENV }}" >> e2e-summary.md
+          echo "" >> e2e-summary.md
+          echo "## 実行結果" >> e2e-summary.md
+          echo "- 環境セットアップ: ${{ needs.e2e-environment-setup.outputs.environment_ready == 'true' && '✅ 成功' || '❌ 失敗' }}" >> e2e-summary.md
+          echo "- テスト実行: ${{ needs.e2e-execution.result }}" >> e2e-summary.md
+
+      - name: Upload Summary Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-summary-report
+          path: e2e-summary.md
