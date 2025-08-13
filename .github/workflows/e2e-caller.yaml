@@ -1,0 +1,18 @@
+name: E2E Testing Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  e2e-testing:
+    uses: satoshi-watanabe-0001/sample001/.github/workflows/ci-called.yaml@main
+    with:
+      ENV: e2e
+      REPO_TYPE: e2e
+      CONFIG_FILES: ci-config.yaml
+    secrets: inherit
