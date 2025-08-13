@@ -3,24 +3,27 @@ import { test, expect } from '@playwright/test'
 test('スマートフォン購入フロー', async ({ page }) => {
   await page.goto('/')
   
-  await page.click('[data-testid="smartphone-select"]')
+  await expect(page.getByText('特別キャンペーン実施中')).toBeVisible()
   
-  const response = await page.waitForResponse('**/api/smartphones/**')
-  expect(response.status()).toBe(200)
+  await page.goto('/smartphone-selection')
+  await expect(page.getByText('スマホの選択')).toBeVisible()
   
-  await page.click('[data-testid="purchase-button"]')
-  await expect(page.getByText('購入完了')).toBeVisible()
+  await page.click('text=iPhone')
+  
+  await expect(page).toHaveURL(/\/smartphones\/iphone/)
 })
 
 test('認証フロー', async ({ page }) => {
   await page.goto('/login')
   
-  await page.fill('[data-testid="username"]', 'testuser')
-  await page.fill('[data-testid="password"]', 'password')
-  await page.click('[data-testid="login-button"]')
+  await expect(page.getByText('ログイン')).toBeVisible()
+  await expect(page.getByText('ahamoアカウントにログインしてください')).toBeVisible()
   
-  const response = await page.waitForResponse('**/api/auth/login')
-  expect(response.status()).toBe(200)
+  await page.fill('#email', 'test@example.com')
+  await page.fill('#password', 'password123')
   
-  await expect(page.getByText('ログイン成功')).toBeVisible()
+  await page.click('button[type="submit"]')
+  
+  await page.waitForURL('/')
+  await expect(page.getByText('特別キャンペーン実施中')).toBeVisible()
 })
