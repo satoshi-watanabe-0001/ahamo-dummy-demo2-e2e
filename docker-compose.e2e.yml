@@ -25,16 +25,18 @@ services:
       - "3001:3001"
     environment:
       - SPRING_PROFILES_ACTIVE=e2e
-      - AUTH_SERVICE_URL=http://auth-service:8080
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - PRODUCT_SERVICE_URL=http://product-service:8080
     depends_on:
       - auth-service
+      - product-service
     networks:
       - e2e-network
 
-  # 認証サービス (ポート8080)
-  auth-service:
+  # Product Service (ポート8080)
+  product-service:
     build:
-      context: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+      context: ./repos/ahamo-dummy-demo2-product-service
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -43,7 +45,25 @@ services:
       - DATABASE_URL=jdbc:postgresql://postgres:5432/e2e_test
       - DB_USERNAME=testuser
       - DB_PASSWORD=testpass
+    depends_on:
+      - postgres
+    networks:
+      - e2e-network
+
+  # 認証サービス (ポート8081に変更)
+  auth-service:
+    build:
+      context: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=e2e
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/e2e_test
+      - DB_USERNAME=testuser
+      - DB_PASSWORD=testpass
       - JWT_SECRET=myVerySecretJWTKeyForAhamoDummyDemo2AuthService2024
+      - SERVER_PORT=8081
     depends_on:
       - postgres
     networks:
