@@ -50,19 +50,20 @@ services:
     networks:
       - e2e-network
 
-  # 認証サービス (ポート8080)
+  # 認証サービス (ポート8081)
   auth-service:
     build:
       context: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=e2e
       - DATABASE_URL=jdbc:postgresql://postgres:5432/e2e_test
       - DB_USERNAME=testuser
       - DB_PASSWORD=testpass
       - JWT_SECRET=myVerySecretJWTKeyForAhamoDummyDemo2AuthService2024
+      - SERVER_PORT=8081
     depends_on:
       - postgres
     networks:
