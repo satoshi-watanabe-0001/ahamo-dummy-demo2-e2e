@@ -11,6 +11,11 @@ app:
       BUILD_CONTEXT: ./repos/ahamo-dummy-demo2-api-gateway-service
       DOCKERFILE: Dockerfile
       SERVICE_NAME: api-gateway
+    - REPO_NAME: ahamo-dummy-demo2-product-service
+      REPO_URL: https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-product-service.git
+      BUILD_CONTEXT: ./repos/ahamo-dummy-demo2-product-service
+      DOCKERFILE: Dockerfile
+      SERVICE_NAME: product-service
     - REPO_NAME: -satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
       REPO_URL: https://github.com/satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service.git
       BUILD_CONTEXT: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
