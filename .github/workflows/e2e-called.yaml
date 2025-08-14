@@ -131,7 +131,7 @@ jobs:
             api_gateway_status="error"
           fi
           
-          if curl -f http://localhost:8080/ || curl -f http://localhost:8080/actuator/health; then
+          if curl -f http://localhost:8080/api/v1/actuator/health; then
             echo "✅ 認証サービス正常"
             auth_status="ok"
           else
