@@ -1,0 +1,36 @@
+{
+  "borderRadius": {
+    "$type": "borderRadius",
+    "sm": {
+      "$value": "4px",
+      "$description": "Small border radius (rounded-sm)"
+    },
+    "md": {
+      "$value": "8px",
+      "$description": "Medium border radius (rounded-lg)"
+    },
+    "lg": {
+      "$value": "16px",
+      "$description": "Large border radius (rounded-2xl)"
+    },
+    "xl": {
+      "$value": "24px",
+      "$description": "Extra large border radius (rounded-3xl)"
+    }
+  },
+  "shadow": {
+    "$type": "boxShadow",
+    "sm": {
+      "$value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      "$description": "Small shadow (shadow-sm)"
+    },
+    "md": {
+      "$value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+      "$description": "Medium shadow (shadow-md)"
+    },
+    "lg": {
+      "$value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      "$description": "Large shadow (shadow-lg)"
+    }
+  }
+}

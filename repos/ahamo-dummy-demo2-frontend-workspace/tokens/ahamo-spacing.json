@@ -1,0 +1,29 @@
+{
+  "spacing": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "4px",
+      "$description": "Extra small spacing (p-1)"
+    },
+    "sm": {
+      "$value": "8px",
+      "$description": "Small spacing (p-2)"
+    },
+    "md": {
+      "$value": "16px",
+      "$description": "Medium spacing (p-4)"
+    },
+    "lg": {
+      "$value": "24px",
+      "$description": "Large spacing (p-6)"
+    },
+    "xl": {
+      "$value": "32px",
+      "$description": "Extra large spacing (p-8)"
+    },
+    "2xl": {
+      "$value": "64px",
+      "$description": "2X large spacing (py-16)"
+    }
+  }
+}

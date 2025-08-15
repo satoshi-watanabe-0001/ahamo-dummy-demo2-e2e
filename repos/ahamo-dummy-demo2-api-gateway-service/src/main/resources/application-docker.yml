@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ahamo-dummy-demo2-api-gateway-service
+  profiles:
+    active: docker
+  
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8080
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+      timeout: 2000ms
+
+jwt:
+  secret: ${JWT_SECRET:dGVzdFNlY3JldEtleUZvckpXVFRva2VuVGVzdGluZ1B1cnBvc2VzMTIzNDU2Nzg5MA==}
+
+logging:
+  level:
+    com.ahamo.dummy.demo2.gateway: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,113 @@
+{
+  "color": {
+    "$type": "color",
+    "primary": {
+      "gradient-start": {
+        "$value": "#f97316",
+        "$description": "Primary gradient start color (orange-500)"
+      },
+      "gradient-end": {
+        "$value": "#ef4444",
+        "$description": "Primary gradient end color (red-500)"
+      }
+    },
+    "blue": {
+      "50": {
+        "$value": "#eff6ff",
+        "$description": "Blue background light"
+      },
+      "200": {
+        "$value": "#bfdbfe",
+        "$description": "Blue border color"
+      },
+      "800": {
+        "$value": "#1e40af",
+        "$description": "Blue text color"
+      }
+    },
+    "green": {
+      "50": {
+        "$value": "#f0fdf4",
+        "$description": "Green background light"
+      },
+      "200": {
+        "$value": "#bbf7d0",
+        "$description": "Green border color"
+      },
+      "800": {
+        "$value": "#166534",
+        "$description": "Green text color"
+      }
+    },
+    "purple": {
+      "50": {
+        "$value": "#faf5ff",
+        "$description": "Purple background light"
+      },
+      "200": {
+        "$value": "#e9d5ff",
+        "$description": "Purple border color"
+      },
+      "800": {
+        "$value": "#6b21a8",
+        "$description": "Purple text color"
+      }
+    },
+    "amber": {
+      "50": {
+        "$value": "#fffbeb",
+        "$description": "Amber background light"
+      },
+      "200": {
+        "$value": "#fde68a",
+        "$description": "Amber border color"
+      },
+      "800": {
+        "$value": "#92400e",
+        "$description": "Amber text color"
+      }
+    },
+    "orange": {
+      "50": {
+        "$value": "#fff7ed",
+        "$description": "Orange background light"
+      },
+      "200": {
+        "$value": "#fed7aa",
+        "$description": "Orange border color"
+      },
+      "800": {
+        "$value": "#9a3412",
+        "$description": "Orange text color"
+      }
+    },
+    "slate": {
+      "200": {
+        "$value": "#e2e8f0",
+        "$description": "Slate border color"
+      },
+      "800": {
+        "$value": "#1e293b",
+        "$description": "Slate dark background"
+      },
+      "900": {
+        "$value": "#0f172a",
+        "$description": "Slate darkest background"
+      }
+    },
+    "neutral": {
+      "white": {
+        "$value": "#ffffff",
+        "$description": "White background"
+      },
+      "text-primary": {
+        "$value": "#1f2937",
+        "$description": "Primary text color"
+      },
+      "text-secondary": {
+        "$value": "#6b7280",
+        "$description": "Secondary text color"
+      }
+    }
+  }
+}

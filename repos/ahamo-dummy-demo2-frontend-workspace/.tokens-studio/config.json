@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "storage": {
+    "provider": "github",
+    "repository": "satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace",
+    "branch": "main",
+    "path": "tokens",
+    "baseUrl": "https://api.github.com"
+  },
+  "sync": {
+    "enabled": true,
+    "autoSync": false,
+    "syncOnStartup": true
+  },
+  "tokenSets": [
+    {
+      "name": "ahamo-colors",
+      "path": "ahamo-colors.json",
+      "enabled": true
+    },
+    {
+      "name": "ahamo-typography",
+      "path": "ahamo-typography.json",
+      "enabled": true
+    },
+    {
+      "name": "ahamo-spacing",
+      "path": "ahamo-spacing.json",
+      "enabled": true
+    },
+    {
+      "name": "ahamo-effects",
+      "path": "ahamo-effects.json",
+      "enabled": true
+    }
+  ]
+}

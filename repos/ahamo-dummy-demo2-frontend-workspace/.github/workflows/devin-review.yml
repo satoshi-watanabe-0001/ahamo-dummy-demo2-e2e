@@ -1,0 +1,115 @@
+# AIレビューワークフローを無効化
+# name: Devin Code Review
+
+# on:
+#   pull_request:
+#     types: [opened, synchronize, edited]
+
+# jobs:
+#   code-review:
+#     runs-on: ubuntu-latest
+#     env:
+#       DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+#       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     steps:
+#       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+#         with:
+#           fetch-depth: 0
+#           ref: ${{ github.event.pull_request.head.sha }}
+
+#       - name: Devin review combined
+#         if: contains(github.event.pull_request.body, 'devin-review')
+#         run: |
+#           session_comment=$(gh pr view "${{ github.event.number }}" --json comments --jq '.comments[] | select(.body | contains("Devin Session ID:")) | .body' | head -n 1)
+
+#           create_session() {
+#             local prompt="$1"
+
+#             local response
+#             response=$(curl -s -w "\\\\\\\\n%{http_code}" -X POST "<https://api.devin.ai/v1/sessions>" \\\\\\\\
+#                       -H "Authorization: Bearer $DEVIN_API_KEY" \\\\\\\\
+#                       -H "Content-Type: application/json" \\\\\\\\
+#                       -d "{\\\\\\\\"prompt\\\\\\\\": \\\\\\\\"$prompt\\\\\\\\"}")
+
+#             local http_status
+#             http_status=$(echo "$response" | tail -n 1)
+#             echo "Request info: status code = $http_status"
+
+#             if [ "$http_status" -ne 200 ]; then
+#               exit 1
+#             fi
+
+#             local http_body
+#             http_body=$(echo "$response" | sed '$d')
+
+#             local session_id
+#             session_id=$(echo "$http_body" | jq -r '.session_id')
+#             if [ -z "$session_id" ] || [ "$session_id" = "null" ]; then
+#               echo "Failed to get session ID, body = $http_body"
+#               exit 1
+#             fi
+#             gh pr comment "${{ github.event.number }}" --body "Devin Session ID: $session_id"
+#           }
+
+#           update_session() {
+#             local session_id="$1"
+#             local message="$2"
+#             local response
+#             response=$(curl -s -w "\\\\\\\\n%{http_code}" -X POST "<https://api.devin.ai/v1/session/${session_id}/message>" \\\\\\\\
+#                       -H "Authorization: Bearer $DEVIN_API_KEY" \\\\\\\\
+#                       -H "Content-Type: application/json" \\\\\\\\
+#                       -d "{\\\\\\\\"message\\\\\\\\": \\\\\\\\"$message\\\\\\\\"}")
+
+#             local http_status
+#             http_status=$(echo "$response" | tail -n 1)
+#             echo "Request info: status code = $http_status"
+
+#             if [ "$http_status" -ne 200 ]; then
+#               exit 1
+#             fi
+#           }
+
+#           instructions="【レビュー時の指示】\\\\\\\\n1. Knowledgeの活用:\\\\\\\\n  - レビュー時は、最大限Knowledgeを利用すること。\\\\\\\\n2. Plan作成とチェックリスト:\\\\\\\\n  - Planを作るときに、ファイルごとにチェックリストを作り、既存の指摘も列挙する。\\\\\\\\n  - その上で、他の観点で指摘できることがないかチェックする（すでに指摘されているものは指摘しない）。\\\\\\\\n3. 完了時の対応:\\\\\\\\n  - レビューが完了したら、必ずその旨をGitHub上でコメントする。\\\\\\\\n  - 問題がなかった箇所は、手短に列挙する（追加の理由説明は不要）。\\\\\\\\n4. 状況の確認:\\\\\\\\n  - コメントのやり取りを再確認し、最新の状況を把握する。\\\\\\\\n5. 重複防止:\\\\\\\\n  - 既に指摘した内容は再度指摘しない（ghコマンドで既存の指摘を確認する）。\\\\\\\\n6. GitHub連携:\\\\\\\\n  - Devin.ai上での返信だけでなく、必ずghコマンドを利用してGitHub上にコメントを投稿する。ただし、レビューが完了した旨のメッセージは、重複して投稿しないよう注意する。"
+
+#           newly_added_devin_review=false
+#           if [ "${{ github.event.action }}" = "edited" ] && [ -n "${{ github.event.changes.body.from }}" ]; then
+#             # 変更前の本文に devin-review が含まれていたかどうか
+#             if ! echo "${{ github.event.changes.body.from }}" | grep -q "devin-review"; then
+#               newly_added_devin_review=true
+#             fi
+#           fi
+
+#           if [ "$newly_added_devin_review" = "true" ] || [ "${{ github.run_attempt }}" -gt 1 ]; then
+#             # 手動での再試行
+#             base_prompt="${{ github.event.number }}をもう一度、0からレビューしてください。"
+#             additional="レビュー範囲については、すべての差分を対象にしてください。"
+#             prompt="$base_prompt $instructions $additional"
+
+#             if [ -z "$session_comment" ]; then
+#               create_session "$prompt"
+#             else
+#               session_id=$(echo "$session_comment" | sed -E 's/.*Devin Session ID: (devin-[a-zA-Z0-9]+).*/\\\\\\\\1/')
+#               update_session "$session_id" "$prompt"
+#             fi
+
+#           elif [ "${{ github.event.action }}" = "synchronize" ] && [ "${{ github.run_attempt }}" -eq 1 ]; then
+#             # 新規コミットなどが入った場合の自動レビュー
+#             if [ -z "$session_comment" ]; then
+#               exit 0
+#             fi
+#             session_id=$(echo "$session_comment" | sed -E 's/.*Devin Session ID: (devin-[a-zA-Z0-9]+).*/\\\\\\\\1/')
+#             base_prompt="${{ github.event.pull_request.html_url }} に変化がありました。再度レビューしてください。"
+#             additional="レビュー範囲については、基本あなたが前回見たCommitから、最新のCommitまでの範囲で十分です。ただし gh pr diff ${{ github.event.number }} などを使い、PRで変更のあったファイルに限定しレビューしてください。（ただ単にmasterをPRにマージした = ブランチを最新化しただけである場合は、merge commitの差分をレビューしないようにしてください。）"
+#             prompt="$base_prompt $instructions $additional"
+#             update_session "$session_id" "$prompt"
+
+#           else
+#             if [ -z "$session_comment" ]; then
+#               base_prompt="${{ github.event.pull_request.html_url }} をレビューしてください。"
+#               additional=""
+#               prompt="$base_prompt $instructions $additional"
+#               create_session "$prompt"
+#             else
+#               exit 0
+#             fi
+#           fi

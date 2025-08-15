@@ -1,0 +1,2545 @@
+{
+  "unitTests": {
+    "total": 253,
+    "passed": 253,
+    "failed": 0,
+    "details": [
+      {
+        "name": "renders simulation title and base information",
+        "fullName": "PriceSimulation renders simulation title and base information",
+        "status": "passed",
+        "duration": 57,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "calculates total price correctly with all options",
+        "fullName": "PriceSimulation calculates total price correctly with all options",
+        "status": "passed",
+        "duration": 6,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "calculates total price correctly with only data plan",
+        "fullName": "PriceSimulation calculates total price correctly with only data plan",
+        "status": "passed",
+        "duration": 22,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "shows selected plan details",
+        "fullName": "PriceSimulation shows selected plan details",
+        "status": "passed",
+        "duration": 8,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "handles null options gracefully",
+        "fullName": "PriceSimulation handles null options gracefully",
+        "status": "passed",
+        "duration": 6,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "PriceSimulation applies custom className",
+        "status": "passed",
+        "duration": 4,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "shows universal service and relay service fees",
+        "fullName": "PriceSimulation shows universal service and relay service fees",
+        "status": "passed",
+        "duration": 7,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "does not show voice option when price is 0",
+        "fullName": "PriceSimulation does not show voice option when price is 0",
+        "status": "passed",
+        "duration": 7,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "shows voice option when price is greater than 0",
+        "fullName": "PriceSimulation shows voice option when price is greater than 0",
+        "status": "passed",
+        "duration": 9,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "does not show overseas calling option when price is 0",
+        "fullName": "PriceSimulation does not show overseas calling option when price is 0",
+        "status": "passed",
+        "duration": 4,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "shows overseas calling option when price is greater than 0",
+        "fullName": "PriceSimulation shows overseas calling option when price is greater than 0",
+        "status": "passed",
+        "duration": 4,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "handles missing options in data gracefully",
+        "fullName": "PriceSimulation handles missing options in data gracefully",
+        "status": "passed",
+        "duration": 5,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "formats prices with commas correctly",
+        "fullName": "PriceSimulation formats prices with commas correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "PriceSimulation.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders smartphone information correctly",
+        "fullName": "SmartphoneListCard renders smartphone information correctly",
+        "status": "passed",
+        "duration": 51,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "displays sale label when present",
+        "fullName": "SmartphoneListCard displays sale label when present",
+        "status": "passed",
+        "duration": 7,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "does not display sale label when not present",
+        "fullName": "SmartphoneListCard does not display sale label when not present",
+        "status": "passed",
+        "duration": 14,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders color options when available",
+        "fullName": "SmartphoneListCard renders color options when available",
+        "status": "passed",
+        "duration": 54,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles color selection",
+        "fullName": "SmartphoneListCard handles color selection",
+        "status": "passed",
+        "duration": 26,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders features list (limited to 2)",
+        "fullName": "SmartphoneListCard renders features list (limited to 2)",
+        "status": "passed",
+        "duration": 9,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders description when present",
+        "fullName": "SmartphoneListCard renders description when present",
+        "status": "passed",
+        "duration": 4,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "SmartphoneListCard applies custom className",
+        "status": "passed",
+        "duration": 4,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders action button",
+        "fullName": "SmartphoneListCard renders action button",
+        "status": "passed",
+        "duration": 22,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "has proper accessibility attributes",
+        "fullName": "SmartphoneListCard has proper accessibility attributes",
+        "status": "passed",
+        "duration": 12,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "uses horizontal layout structure",
+        "fullName": "SmartphoneListCard uses horizontal layout structure",
+        "status": "passed",
+        "duration": 5,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "handles keyboard navigation for color selection",
+        "fullName": "SmartphoneListCard handles keyboard navigation for color selection",
+        "status": "passed",
+        "duration": 15,
+        "file": "SmartphoneListCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders smartphones from props correctly",
+        "fullName": "SmartphoneCarousel renders smartphones from props correctly",
+        "status": "passed",
+        "duration": 60,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders smartphones from API when no props provided",
+        "fullName": "SmartphoneCarousel renders smartphones from API when no props provided",
+        "status": "passed",
+        "duration": 22,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays loading state correctly",
+        "fullName": "SmartphoneCarousel displays loading state correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays error state correctly",
+        "fullName": "SmartphoneCarousel displays error state correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "displays empty state when no smartphones available",
+        "fullName": "SmartphoneCarousel displays empty state when no smartphones available",
+        "status": "passed",
+        "duration": 4,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "handles next button navigation",
+        "fullName": "SmartphoneCarousel handles next button navigation",
+        "status": "passed",
+        "duration": 21,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles previous button navigation",
+        "fullName": "SmartphoneCarousel handles previous button navigation",
+        "status": "passed",
+        "duration": 13,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles dot indicator navigation",
+        "fullName": "SmartphoneCarousel handles dot indicator navigation",
+        "status": "passed",
+        "duration": 83,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles auto-play toggle",
+        "fullName": "SmartphoneCarousel handles auto-play toggle",
+        "status": "passed",
+        "duration": 16,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays auto-play button correctly",
+        "fullName": "SmartphoneCarousel displays auto-play button correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays smartphone details correctly",
+        "fullName": "SmartphoneCarousel displays smartphone details correctly",
+        "status": "passed",
+        "duration": 17,
+        "file": "SmartphoneCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders smartphone information correctly",
+        "fullName": "DeviceDetailPage renders smartphone information correctly",
+        "status": "passed",
+        "duration": 89,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "displays loading state",
+        "fullName": "DeviceDetailPage displays loading state",
+        "status": "passed",
+        "duration": 48,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays error state when smartphone not found",
+        "fullName": "DeviceDetailPage displays error state when smartphone not found",
+        "status": "passed",
+        "duration": 5,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "handles back button click",
+        "fullName": "DeviceDetailPage handles back button click",
+        "status": "passed",
+        "duration": 52,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders payment options section",
+        "fullName": "DeviceDetailPage renders payment options section",
+        "status": "passed",
+        "duration": 89,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders color selector when colors available",
+        "fullName": "DeviceDetailPage renders color selector when colors available",
+        "status": "passed",
+        "duration": 17,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders features section",
+        "fullName": "DeviceDetailPage renders features section",
+        "status": "passed",
+        "duration": 22,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "renders eSIM section",
+        "fullName": "DeviceDetailPage renders eSIM section",
+        "status": "passed",
+        "duration": 21,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders trade-in section",
+        "fullName": "DeviceDetailPage renders trade-in section",
+        "status": "passed",
+        "duration": 16,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders accessory grid",
+        "fullName": "DeviceDetailPage renders accessory grid",
+        "status": "passed",
+        "duration": 17,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "renders apply button",
+        "fullName": "DeviceDetailPage renders apply button",
+        "status": "passed",
+        "duration": 14,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles device ID from URL slug",
+        "fullName": "DeviceDetailPage handles device ID from URL slug",
+        "status": "passed",
+        "duration": 14,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles direct device ID",
+        "fullName": "DeviceDetailPage handles direct device ID",
+        "status": "passed",
+        "duration": 11,
+        "file": "DeviceDetailPage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders title and options correctly",
+        "fullName": "OptionSelector renders title and options correctly",
+        "status": "passed",
+        "duration": 13,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "highlights selected option",
+        "fullName": "OptionSelector highlights selected option",
+        "status": "passed",
+        "duration": 62,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "calls onOptionSelect when option is clicked",
+        "fullName": "OptionSelector calls onOptionSelect when option is clicked",
+        "status": "passed",
+        "duration": 18,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "OptionSelector applies custom className",
+        "status": "passed",
+        "duration": 3,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders empty state when no options provided",
+        "fullName": "OptionSelector renders empty state when no options provided",
+        "status": "passed",
+        "duration": 5,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "shows no selection when selectedOption is null",
+        "fullName": "OptionSelector shows no selection when selectedOption is null",
+        "status": "passed",
+        "duration": 42,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders options without displaying price information",
+        "fullName": "OptionSelector renders options without displaying price information",
+        "status": "passed",
+        "duration": 3,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders SelectionStep with correct title",
+        "fullName": "OptionSelector renders SelectionStep with correct title",
+        "status": "passed",
+        "duration": 2,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles click events correctly",
+        "fullName": "OptionSelector handles click events correctly",
+        "status": "passed",
+        "duration": 12,
+        "file": "OptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "DocumentCard コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 6,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "blueバリアントが正しく適用される",
+        "fullName": "DocumentCard コンポーネント blueバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 8,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "greenバリアントが正しく適用される",
+        "fullName": "DocumentCard コンポーネント greenバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 3,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "orangeバリアントが正しく適用される",
+        "fullName": "DocumentCard コンポーネント orangeバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 2,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "カスタムclassNameが正しく適用される",
+        "fullName": "DocumentCard コンポーネント カスタムclassNameが正しく適用される",
+        "status": "passed",
+        "duration": 1,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "タイトルとサブタイトルが中央揃えで表示される",
+        "fullName": "DocumentCard コンポーネント タイトルとサブタイトルが中央揃えで表示される",
+        "status": "passed",
+        "duration": 2,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "書類名がアイコンエリアとキャプションの両方に表示される",
+        "fullName": "DocumentCard コンポーネント 書類名がアイコンエリアとキャプションの両方に表示される",
+        "status": "passed",
+        "duration": 2,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "アイコンエリアが正しいサイズで表示される",
+        "fullName": "DocumentCard コンポーネント アイコンエリアが正しいサイズで表示される",
+        "status": "passed",
+        "duration": 5,
+        "file": "DocumentCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders smartphone information correctly",
+        "fullName": "SmartphoneCard renders smartphone information correctly",
+        "status": "passed",
+        "duration": 11,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "displays sale label when present",
+        "fullName": "SmartphoneCard displays sale label when present",
+        "status": "passed",
+        "duration": 9,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "does not display sale label when not present",
+        "fullName": "SmartphoneCard does not display sale label when not present",
+        "status": "passed",
+        "duration": 5,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays 5G badge when has5G is true",
+        "fullName": "SmartphoneCard displays 5G badge when has5G is true",
+        "status": "passed",
+        "duration": 4,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "does not display 5G badge when has5G is false",
+        "fullName": "SmartphoneCard does not display 5G badge when has5G is false",
+        "status": "passed",
+        "duration": 3,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders color options when available",
+        "fullName": "SmartphoneCard renders color options when available",
+        "status": "passed",
+        "duration": 33,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles color selection",
+        "fullName": "SmartphoneCard handles color selection",
+        "status": "passed",
+        "duration": 18,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders features list",
+        "fullName": "SmartphoneCard renders features list",
+        "status": "passed",
+        "duration": 19,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders description when present",
+        "fullName": "SmartphoneCard renders description when present",
+        "status": "passed",
+        "duration": 9,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "SmartphoneCard applies custom className",
+        "status": "passed",
+        "duration": 3,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders action button",
+        "fullName": "SmartphoneCard renders action button",
+        "status": "passed",
+        "duration": 12,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "has proper accessibility attributes",
+        "fullName": "SmartphoneCard has proper accessibility attributes",
+        "status": "passed",
+        "duration": 13,
+        "file": "SmartphoneCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "InfoCard コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 4,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "blueバリアントが正しく適用される",
+        "fullName": "InfoCard コンポーネント blueバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 12,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "greenバリアントが正しく適用される",
+        "fullName": "InfoCard コンポーネント greenバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 2,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "purpleバリアントが正しく適用される",
+        "fullName": "InfoCard コンポーネント purpleバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 1,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "amberバリアントが正しく適用される",
+        "fullName": "InfoCard コンポーネント amberバリアントが正しく適用される",
+        "status": "passed",
+        "duration": 2,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "カスタムclassNameが正しく適用される",
+        "fullName": "InfoCard コンポーネント カスタムclassNameが正しく適用される",
+        "status": "passed",
+        "duration": 1,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "複雑な子要素が正しくレンダリングされる",
+        "fullName": "InfoCard コンポーネント 複雑な子要素が正しくレンダリングされる",
+        "status": "passed",
+        "duration": 21,
+        "file": "InfoCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders error message correctly",
+        "fullName": "ErrorMessage renders error message correctly",
+        "status": "passed",
+        "duration": 25,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies default background gradient",
+        "fullName": "ErrorMessage applies default background gradient",
+        "status": "passed",
+        "duration": 2,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom background gradient",
+        "fullName": "ErrorMessage applies custom background gradient",
+        "status": "passed",
+        "duration": 2,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "ErrorMessage applies custom className",
+        "status": "passed",
+        "duration": 1,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has proper accessibility attributes",
+        "fullName": "ErrorMessage has proper accessibility attributes",
+        "status": "passed",
+        "duration": 9,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "displays error text in red color",
+        "fullName": "ErrorMessage displays error text in red color",
+        "status": "passed",
+        "duration": 2,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders within SectionContainer",
+        "fullName": "ErrorMessage renders within SectionContainer",
+        "status": "passed",
+        "duration": 5,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has full screen layout",
+        "fullName": "ErrorMessage has full screen layout",
+        "status": "passed",
+        "duration": 1,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "centers content properly",
+        "fullName": "ErrorMessage centers content properly",
+        "status": "passed",
+        "duration": 5,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "handles long error messages",
+        "fullName": "ErrorMessage handles long error messages",
+        "status": "passed",
+        "duration": 2,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles empty error message",
+        "fullName": "ErrorMessage handles empty error message",
+        "status": "passed",
+        "duration": 1,
+        "file": "ErrorMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "CampaignCarousel コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 56,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "ナビゲーションボタンが表示される",
+        "fullName": "CampaignCarousel コンポーネント ナビゲーションボタンが表示される",
+        "status": "passed",
+        "duration": 84,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "次へボタンをクリックすると次のスライドに移動する",
+        "fullName": "CampaignCarousel コンポーネント 次へボタンをクリックすると次のスライドに移動する",
+        "status": "passed",
+        "duration": 82,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "前へボタンをクリックすると前のスライドに移動する",
+        "fullName": "CampaignCarousel コンポーネント 前へボタンをクリックすると前のスライドに移動する",
+        "status": "passed",
+        "duration": 54,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "ドットインジケーターが正しい数表示される",
+        "fullName": "CampaignCarousel コンポーネント ドットインジケーターが正しい数表示される",
+        "status": "passed",
+        "duration": 55,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "ドットをクリックすると対応するスライドに移動する",
+        "fullName": "CampaignCarousel コンポーネント ドットをクリックすると対応するスライドに移動する",
+        "status": "passed",
+        "duration": 44,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "自動再生トグルボタンが表示される",
+        "fullName": "CampaignCarousel コンポーネント 自動再生トグルボタンが表示される",
+        "status": "passed",
+        "duration": 7,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "自動再生トグルボタンをクリックすると状態が変わる",
+        "fullName": "CampaignCarousel コンポーネント 自動再生トグルボタンをクリックすると状態が変わる",
+        "status": "passed",
+        "duration": 18,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "自動再生が有効な場合、時間経過でスライドが変わる",
+        "fullName": "CampaignCarousel コンポーネント 自動再生が有効な場合、時間経過でスライドが変わる",
+        "status": "passed",
+        "duration": 12,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "手動操作後は自動再生が一時停止される",
+        "fullName": "CampaignCarousel コンポーネント 手動操作後は自動再生が一時停止される",
+        "status": "passed",
+        "duration": 55,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "最後のスライドから次へ移動すると最初のスライドに戻る",
+        "fullName": "CampaignCarousel コンポーネント 最後のスライドから次へ移動すると最初のスライドに戻る",
+        "status": "passed",
+        "duration": 69,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "最初のスライドから前へ移動すると最後のスライドに移動する",
+        "fullName": "CampaignCarousel コンポーネント 最初のスライドから前へ移動すると最後のスライドに移動する",
+        "status": "passed",
+        "duration": 42,
+        "file": "CampaignCarousel.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders default accessories correctly",
+        "fullName": "AccessoryGrid renders default accessories correctly",
+        "status": "passed",
+        "duration": 19,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 9
+      },
+      {
+        "name": "renders custom accessories when provided",
+        "fullName": "AccessoryGrid renders custom accessories when provided",
+        "status": "passed",
+        "duration": 4,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 7
+      },
+      {
+        "name": "renders emoji icons correctly",
+        "fullName": "AccessoryGrid renders emoji icons correctly",
+        "status": "passed",
+        "duration": 5,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "AccessoryGrid applies custom className",
+        "status": "passed",
+        "duration": 4,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has proper grid layout structure",
+        "fullName": "AccessoryGrid has proper grid layout structure",
+        "status": "passed",
+        "duration": 4,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has hover effects on accessory cards",
+        "fullName": "AccessoryGrid has hover effects on accessory cards",
+        "status": "passed",
+        "duration": 3,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders empty grid when empty accessories array provided",
+        "fullName": "AccessoryGrid renders empty grid when empty accessories array provided",
+        "status": "passed",
+        "duration": 2,
+        "file": "AccessoryGrid.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders header elements correctly",
+        "fullName": "Header renders header elements correctly",
+        "status": "passed",
+        "duration": 37,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 6
+      },
+      {
+        "name": "has correct navigation links",
+        "fullName": "Header has correct navigation links",
+        "status": "passed",
+        "duration": 87,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "toggles mobile menu correctly",
+        "fullName": "Header toggles mobile menu correctly",
+        "status": "passed",
+        "duration": 13,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "closes mobile menu when navigation link is clicked",
+        "fullName": "Header closes mobile menu when navigation link is clicked",
+        "status": "passed",
+        "duration": 11,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "animates hamburger menu icon correctly",
+        "fullName": "Header animates hamburger menu icon correctly",
+        "status": "passed",
+        "duration": 8,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 6
+      },
+      {
+        "name": "shows desktop navigation elements",
+        "fullName": "Header shows desktop navigation elements",
+        "status": "passed",
+        "duration": 9,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "has proper accessibility attributes",
+        "fullName": "Header has proper accessibility attributes",
+        "status": "passed",
+        "duration": 4,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies correct styling classes",
+        "fullName": "Header applies correct styling classes",
+        "status": "passed",
+        "duration": 3,
+        "file": "header.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders payment options correctly",
+        "fullName": "PaymentOptionSelector renders payment options correctly",
+        "status": "passed",
+        "duration": 7,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "highlights selected option",
+        "fullName": "PaymentOptionSelector highlights selected option",
+        "status": "passed",
+        "duration": 4,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "calls onOptionSelect when option is clicked",
+        "fullName": "PaymentOptionSelector calls onOptionSelect when option is clicked",
+        "status": "passed",
+        "duration": 3,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles keyboard navigation",
+        "fullName": "PaymentOptionSelector handles keyboard navigation",
+        "status": "passed",
+        "duration": 4,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "PaymentOptionSelector applies custom className",
+        "status": "passed",
+        "duration": 2,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders empty state when no options provided",
+        "fullName": "PaymentOptionSelector renders empty state when no options provided",
+        "status": "passed",
+        "duration": 2,
+        "file": "PaymentOptionSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should fetch smartphone options successfully",
+        "fullName": "useSmartphoneOptions should fetch smartphone options successfully",
+        "status": "passed",
+        "duration": 56,
+        "file": "useSmartphoneOptions.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "should handle API errors",
+        "fullName": "useSmartphoneOptions should handle API errors",
+        "status": "passed",
+        "duration": 54,
+        "file": "useSmartphoneOptions.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should handle network errors",
+        "fullName": "useSmartphoneOptions should handle network errors",
+        "status": "passed",
+        "duration": 54,
+        "file": "useSmartphoneOptions.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should not fetch when deviceId is empty",
+        "fullName": "useSmartphoneOptions should not fetch when deviceId is empty",
+        "status": "passed",
+        "duration": 4,
+        "file": "useSmartphoneOptions.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "should refetch when deviceId changes",
+        "fullName": "useSmartphoneOptions should refetch when deviceId changes",
+        "status": "passed",
+        "duration": 107,
+        "file": "useSmartphoneOptions.test.tsx",
+        "failureMessages": [],
+        "assertions": 8
+      },
+      {
+        "name": "renders color options correctly",
+        "fullName": "ColorSelector renders color options correctly",
+        "status": "passed",
+        "duration": 17,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "highlights selected color",
+        "fullName": "ColorSelector highlights selected color",
+        "status": "passed",
+        "duration": 3,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "calls onColorSelect when color is clicked",
+        "fullName": "ColorSelector calls onColorSelect when color is clicked",
+        "status": "passed",
+        "duration": 3,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies correct background colors",
+        "fullName": "ColorSelector applies correct background colors",
+        "status": "passed",
+        "duration": 23,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "returns null when no colors provided",
+        "fullName": "ColorSelector returns null when no colors provided",
+        "status": "passed",
+        "duration": 1,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "returns null when colors is undefined",
+        "fullName": "ColorSelector returns null when colors is undefined",
+        "status": "passed",
+        "duration": 1,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "ColorSelector applies custom className",
+        "status": "passed",
+        "duration": 2,
+        "file": "ColorSelector.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders with default message",
+        "fullName": "LoadingSpinner renders with default message",
+        "status": "passed",
+        "duration": 23,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders with custom message",
+        "fullName": "LoadingSpinner renders with custom message",
+        "status": "passed",
+        "duration": 2,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies default background gradient",
+        "fullName": "LoadingSpinner applies default background gradient",
+        "status": "passed",
+        "duration": 2,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom background gradient",
+        "fullName": "LoadingSpinner applies custom background gradient",
+        "status": "passed",
+        "duration": 1,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies default spinner color",
+        "fullName": "LoadingSpinner applies default spinner color",
+        "status": "passed",
+        "duration": 4,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom spinner color",
+        "fullName": "LoadingSpinner applies custom spinner color",
+        "status": "passed",
+        "duration": 7,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "LoadingSpinner applies custom className",
+        "status": "passed",
+        "duration": 1,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has proper accessibility attributes",
+        "fullName": "LoadingSpinner has proper accessibility attributes",
+        "status": "passed",
+        "duration": 23,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "has spinning animation",
+        "fullName": "LoadingSpinner has spinning animation",
+        "status": "passed",
+        "duration": 5,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders within SectionContainer",
+        "fullName": "LoadingSpinner renders within SectionContainer",
+        "status": "passed",
+        "duration": 11,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has full screen layout",
+        "fullName": "LoadingSpinner has full screen layout",
+        "status": "passed",
+        "duration": 1,
+        "file": "LoadingSpinner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders features and specifications correctly",
+        "fullName": "FeatureList renders features and specifications correctly",
+        "status": "passed",
+        "duration": 15,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 7
+      },
+      {
+        "name": "renders only features when specifications not provided",
+        "fullName": "FeatureList renders only features when specifications not provided",
+        "status": "passed",
+        "duration": 3,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders only specifications when features not provided",
+        "fullName": "FeatureList renders only specifications when features not provided",
+        "status": "passed",
+        "duration": 8,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "returns null when no content provided",
+        "fullName": "FeatureList returns null when no content provided",
+        "status": "passed",
+        "duration": 1,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "returns null when empty arrays provided",
+        "fullName": "FeatureList returns null when empty arrays provided",
+        "status": "passed",
+        "duration": 1,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "FeatureList applies custom className",
+        "status": "passed",
+        "duration": 2,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "uses different bullet colors for features and specifications",
+        "fullName": "FeatureList uses different bullet colors for features and specifications",
+        "status": "passed",
+        "duration": 4,
+        "file": "FeatureList.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders main content correctly",
+        "fullName": "MainContent renders main content correctly",
+        "status": "passed",
+        "duration": 10,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders heading and text correctly",
+        "fullName": "MainContent renders heading and text correctly",
+        "status": "passed",
+        "duration": 5,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders action buttons correctly",
+        "fullName": "MainContent renders action buttons correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders campaign carousel component",
+        "fullName": "MainContent renders campaign carousel component",
+        "status": "passed",
+        "duration": 2,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies responsive layout classes",
+        "fullName": "MainContent applies responsive layout classes",
+        "status": "passed",
+        "duration": 21,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies gradient styling correctly",
+        "fullName": "MainContent applies gradient styling correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "MainContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "CampaignCard コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 53,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "compactプロパティがtrueの場合、小さいサイズでレンダリングされる",
+        "fullName": "CampaignCard コンポーネント compactプロパティがtrueの場合、小さいサイズでレンダリングされる",
+        "status": "passed",
+        "duration": 3,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "compactプロパティがfalseの場合、通常サイズでレンダリングされる",
+        "fullName": "CampaignCard コンポーネント compactプロパティがfalseの場合、通常サイズでレンダリングされる",
+        "status": "passed",
+        "duration": 2,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "imageUrlがない場合でも正しくレンダリングされる",
+        "fullName": "CampaignCard コンポーネント imageUrlがない場合でも正しくレンダリングされる",
+        "status": "passed",
+        "duration": 2,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "詳細ボタンがクリック可能である",
+        "fullName": "CampaignCard コンポーネント 詳細ボタンがクリック可能である",
+        "status": "passed",
+        "duration": 31,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "NEWバッジが表示される",
+        "fullName": "CampaignCard コンポーネント NEWバッジが表示される",
+        "status": "passed",
+        "duration": 2,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "キャンペーン画像プレースホルダーが表示される",
+        "fullName": "CampaignCard コンポーネント キャンペーン画像プレースホルダーが表示される",
+        "status": "passed",
+        "duration": 3,
+        "file": "CampaignCard.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders additional content correctly",
+        "fullName": "AdditionalContent renders additional content correctly",
+        "status": "passed",
+        "duration": 27,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders smartphone carousel component",
+        "fullName": "AdditionalContent renders smartphone carousel component",
+        "status": "passed",
+        "duration": 7,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders product list button",
+        "fullName": "AdditionalContent renders product list button",
+        "status": "passed",
+        "duration": 8,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders campaign section",
+        "fullName": "AdditionalContent renders campaign section",
+        "status": "passed",
+        "duration": 11,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders reasons section",
+        "fullName": "AdditionalContent renders reasons section",
+        "status": "passed",
+        "duration": 19,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "renders bonus section",
+        "fullName": "AdditionalContent renders bonus section",
+        "status": "passed",
+        "duration": 11,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "applies gradient styling correctly",
+        "fullName": "AdditionalContent applies gradient styling correctly",
+        "status": "passed",
+        "duration": 10,
+        "file": "AdditionalContent.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "should fetch smartphones successfully",
+        "fullName": "useSmartphones should fetch smartphones successfully",
+        "status": "passed",
+        "duration": 64,
+        "file": "useSmartphones.test.tsx",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "should handle API errors",
+        "fullName": "useSmartphones should handle API errors",
+        "status": "passed",
+        "duration": 54,
+        "file": "useSmartphones.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should fetch single smartphone successfully",
+        "fullName": "useSmartphone should fetch single smartphone successfully",
+        "status": "passed",
+        "duration": 59,
+        "file": "useSmartphones.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "should handle smartphone not found",
+        "fullName": "useSmartphone should handle smartphone not found",
+        "status": "passed",
+        "duration": 52,
+        "file": "useSmartphones.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders footer correctly",
+        "fullName": "Footer renders footer correctly",
+        "status": "passed",
+        "duration": 21,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders section headers correctly",
+        "fullName": "Footer renders section headers correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders link items correctly",
+        "fullName": "Footer renders link items correctly",
+        "status": "passed",
+        "duration": 10,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 9
+      },
+      {
+        "name": "displays copyright information",
+        "fullName": "Footer displays copyright information",
+        "status": "passed",
+        "duration": 4,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has correct href attributes for links",
+        "fullName": "Footer has correct href attributes for links",
+        "status": "passed",
+        "duration": 76,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 10
+      },
+      {
+        "name": "applies responsive layout classes",
+        "fullName": "Footer applies responsive layout classes",
+        "status": "passed",
+        "duration": 5,
+        "file": "Footer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders promotion banner correctly",
+        "fullName": "PromotionBanner renders promotion banner correctly",
+        "status": "passed",
+        "duration": 11,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders promotion title and text correctly",
+        "fullName": "PromotionBanner renders promotion title and text correctly",
+        "status": "passed",
+        "duration": 14,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders promotion badges correctly",
+        "fullName": "PromotionBanner renders promotion badges correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies gradient styling correctly",
+        "fullName": "PromotionBanner applies gradient styling correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders animation elements",
+        "fullName": "PromotionBanner renders animation elements",
+        "status": "passed",
+        "duration": 3,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies responsive text styling",
+        "fullName": "PromotionBanner applies responsive text styling",
+        "status": "passed",
+        "duration": 2,
+        "file": "PromotionBanner.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders trade-in section content correctly",
+        "fullName": "TradeInSection renders trade-in section content correctly",
+        "status": "passed",
+        "duration": 9,
+        "file": "TradeInSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 7
+      },
+      {
+        "name": "highlights point reward with orange color",
+        "fullName": "TradeInSection highlights point reward with orange color",
+        "status": "passed",
+        "duration": 3,
+        "file": "TradeInSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "TradeInSection applies custom className",
+        "status": "passed",
+        "duration": 3,
+        "file": "TradeInSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has proper card structure",
+        "fullName": "TradeInSection has proper card structure",
+        "status": "passed",
+        "duration": 3,
+        "file": "TradeInSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders with children",
+        "fullName": "SectionContainer renders with children",
+        "status": "passed",
+        "duration": 5,
+        "file": "SectionContainer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies default container classes",
+        "fullName": "SectionContainer applies default container classes",
+        "status": "passed",
+        "duration": 2,
+        "file": "SectionContainer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "SectionContainer applies custom className",
+        "status": "passed",
+        "duration": 1,
+        "file": "SectionContainer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders as different HTML elements",
+        "fullName": "SectionContainer renders as different HTML elements",
+        "status": "passed",
+        "duration": 3,
+        "file": "SectionContainer.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "defaults to div element",
+        "fullName": "SectionContainer defaults to div element",
+        "status": "passed",
+        "duration": 2,
+        "file": "SectionContainer.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders with children",
+        "fullName": "GradientButton renders with children",
+        "status": "passed",
+        "duration": 34,
+        "file": "GradientButton.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "GradientButton applies custom className",
+        "status": "passed",
+        "duration": 18,
+        "file": "GradientButton.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "handles click events",
+        "fullName": "GradientButton handles click events",
+        "status": "passed",
+        "duration": 5,
+        "file": "GradientButton.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "applies size classes correctly",
+        "fullName": "GradientButton applies size classes correctly",
+        "status": "passed",
+        "duration": 10,
+        "file": "GradientButton.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies gradient background classes",
+        "fullName": "GradientButton applies gradient background classes",
+        "status": "passed",
+        "duration": 4,
+        "file": "GradientButton.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders eSIM section content correctly",
+        "fullName": "ESIMSection renders eSIM section content correctly",
+        "status": "passed",
+        "duration": 20,
+        "file": "ESIMSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 7
+      },
+      {
+        "name": "renders emoji icons",
+        "fullName": "ESIMSection renders emoji icons",
+        "status": "passed",
+        "duration": 3,
+        "file": "ESIMSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "applies custom className",
+        "fullName": "ESIMSection applies custom className",
+        "status": "passed",
+        "duration": 2,
+        "file": "ESIMSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "has proper structure with grid layout",
+        "fullName": "ESIMSection has proper structure with grid layout",
+        "status": "passed",
+        "duration": 3,
+        "file": "ESIMSection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders navigation buttons correctly when flow is incomplete",
+        "fullName": "NavigationButtons renders navigation buttons correctly when flow is incomplete",
+        "status": "passed",
+        "duration": 22,
+        "file": "NavigationButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders navigation buttons correctly when flow is complete",
+        "fullName": "NavigationButtons renders navigation buttons correctly when flow is complete",
+        "status": "passed",
+        "duration": 4,
+        "file": "NavigationButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies responsive layout classes",
+        "fullName": "NavigationButtons applies responsive layout classes",
+        "status": "passed",
+        "duration": 3,
+        "file": "NavigationButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders action buttons correctly",
+        "fullName": "ActionButtons renders action buttons correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "ActionButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders both buttons correctly",
+        "fullName": "ActionButtons renders both buttons correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "ActionButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "applies correct styling to buttons",
+        "fullName": "ActionButtons applies correct styling to buttons",
+        "status": "passed",
+        "duration": 19,
+        "file": "ActionButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "has responsive container layout",
+        "fullName": "ActionButtons has responsive container layout",
+        "status": "passed",
+        "duration": 1,
+        "file": "ActionButtons.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders phone number selection correctly",
+        "fullName": "PhoneNumberSelection renders phone number selection correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "PhoneNumberSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays new number option correctly",
+        "fullName": "PhoneNumberSelection displays new number option correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "PhoneNumberSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays keep current number option correctly",
+        "fullName": "PhoneNumberSelection displays keep current number option correctly",
+        "status": "passed",
+        "duration": 13,
+        "file": "PhoneNumberSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders device selection correctly",
+        "fullName": "DeviceSelection renders device selection correctly",
+        "status": "passed",
+        "duration": 6,
+        "file": "DeviceSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays smartphone purchase option correctly",
+        "fullName": "DeviceSelection displays smartphone purchase option correctly",
+        "status": "passed",
+        "duration": 3,
+        "file": "DeviceSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays SIM only option correctly",
+        "fullName": "DeviceSelection displays SIM only option correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "DeviceSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "Button コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 13,
+        "file": "button.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "クリック時にonClickが呼び出される",
+        "fullName": "Button コンポーネント クリック時にonClickが呼び出される",
+        "status": "passed",
+        "duration": 29,
+        "file": "button.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "無効状態では操作できない",
+        "fullName": "Button コンポーネント 無効状態では操作できない",
+        "status": "passed",
+        "duration": 20,
+        "file": "button.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "renders SIM selection correctly",
+        "fullName": "SimSelection renders SIM selection correctly",
+        "status": "passed",
+        "duration": 4,
+        "file": "SimSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays eSIM option correctly",
+        "fullName": "SimSelection displays eSIM option correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "SimSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays physical SIM option correctly",
+        "fullName": "SimSelection displays physical SIM option correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "SimSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "should return mock data when API fails",
+        "fullName": "SmartphoneApiService getSmartphones should return mock data when API fails",
+        "status": "passed",
+        "duration": 6,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should filter smartphones by iPhone brand",
+        "fullName": "SmartphoneApiService getSmartphones should filter smartphones by iPhone brand",
+        "status": "passed",
+        "duration": 1,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should filter smartphones by Android brand",
+        "fullName": "SmartphoneApiService getSmartphones should filter smartphones by Android brand",
+        "status": "passed",
+        "duration": 1,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should handle pagination correctly",
+        "fullName": "SmartphoneApiService getSmartphones should handle pagination correctly",
+        "status": "passed",
+        "duration": 1,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should handle HTTP error responses",
+        "fullName": "SmartphoneApiService getSmartphones should handle HTTP error responses",
+        "status": "passed",
+        "duration": 0,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should handle invalid JSON response",
+        "fullName": "SmartphoneApiService getSmartphones should handle invalid JSON response",
+        "status": "passed",
+        "duration": 1,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "should return smartphone data for valid ID",
+        "fullName": "SmartphoneApiService getSmartphoneById should return smartphone data for valid ID",
+        "status": "passed",
+        "duration": 303,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should return error for non-existent ID",
+        "fullName": "SmartphoneApiService getSmartphoneById should return error for non-existent ID",
+        "status": "passed",
+        "duration": 302,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should log API requests and responses",
+        "fullName": "SmartphoneApiService getSmartphoneById should log API requests and responses",
+        "status": "passed",
+        "duration": 303,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "should return smartphone options successfully",
+        "fullName": "SmartphoneApiService getSmartphoneOptions should return smartphone options successfully",
+        "status": "passed",
+        "duration": 301,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 5
+      },
+      {
+        "name": "should handle errors gracefully",
+        "fullName": "SmartphoneApiService getSmartphoneOptions should handle errors gracefully",
+        "status": "passed",
+        "duration": 2,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "should include delay in response",
+        "fullName": "SmartphoneApiService getSmartphoneOptions should include delay in response",
+        "status": "passed",
+        "duration": 302,
+        "file": "api.test.ts",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders smartphone type selection correctly",
+        "fullName": "SmartphoneTypeSelection renders smartphone type selection correctly",
+        "status": "passed",
+        "duration": 9,
+        "file": "SmartphoneTypeSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 3
+      },
+      {
+        "name": "renders success message correctly",
+        "fullName": "ResultMessage renders success message correctly",
+        "status": "passed",
+        "duration": 4,
+        "file": "ResultMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders error message correctly",
+        "fullName": "ResultMessage renders error message correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "ResultMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders info message correctly",
+        "fullName": "ResultMessage renders info message correctly",
+        "status": "passed",
+        "duration": 1,
+        "file": "ResultMessage.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "renders carrier selection correctly",
+        "fullName": "CarrierSelection renders carrier selection correctly",
+        "status": "passed",
+        "duration": 4,
+        "file": "CarrierSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "displays carrier options correctly",
+        "fullName": "CarrierSelection displays carrier options correctly",
+        "status": "passed",
+        "duration": 2,
+        "file": "CarrierSelection.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "正しくレンダリングされる",
+        "fullName": "ContactForm コンポーネント 正しくレンダリングされる",
+        "status": "passed",
+        "duration": 28,
+        "file": "contact-form.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "バリデーションエラーが表示される",
+        "fullName": "ContactForm コンポーネント バリデーションエラーが表示される",
+        "status": "passed",
+        "duration": 46,
+        "file": "contact-form.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "正しい値でフォームが送信される",
+        "fullName": "ContactForm コンポーネント 正しい値でフォームが送信される",
+        "status": "passed",
+        "duration": 156,
+        "file": "contact-form.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      }
+    ]
+  },
+  "integrationTests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "details": []
+  },
+  "e2eTests": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "details": []
+  },
+  "errorHandlingTests": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "details": [
+      {
+        "name": "Network connection failure",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns Network connection failure",
+        "status": "passed",
+        "duration": 6,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "HTTP 404 Not Found",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns HTTP 404 Not Found",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "HTTP 500 Internal Server Error",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns HTTP 500 Internal Server Error",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "HTTP 503 Service Unavailable",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns HTTP 503 Service Unavailable",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Invalid JSON response",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns Invalid JSON response",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Request timeout simulation",
+        "fullName": "Comprehensive Error Scenario Logging Tests API Error Patterns Request timeout simulation",
+        "status": "passed",
+        "duration": 102,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Form validation errors",
+        "fullName": "Comprehensive Error Scenario Logging Tests Form Error Patterns Form validation errors",
+        "status": "passed",
+        "duration": 117,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Form submission network failure",
+        "fullName": "Comprehensive Error Scenario Logging Tests Form Error Patterns Form submission network failure",
+        "status": "passed",
+        "duration": 31,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "localStorage disabled/unavailable",
+        "fullName": "Comprehensive Error Scenario Logging Tests Storage Error Patterns localStorage disabled/unavailable",
+        "status": "passed",
+        "duration": 3,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "localStorage quota exceeded",
+        "fullName": "Comprehensive Error Scenario Logging Tests Storage Error Patterns localStorage quota exceeded",
+        "status": "passed",
+        "duration": 2,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "localStorage access permission denied",
+        "fullName": "Comprehensive Error Scenario Logging Tests Storage Error Patterns localStorage access permission denied",
+        "status": "passed",
+        "duration": 2,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "ErrorMessage component with error logging",
+        "fullName": "Comprehensive Error Scenario Logging Tests Component Error Patterns ErrorMessage component with error logging",
+        "status": "passed",
+        "duration": 2,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Component prop validation errors",
+        "fullName": "Comprehensive Error Scenario Logging Tests Component Error Patterns Component prop validation errors",
+        "status": "passed",
+        "duration": 2,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 0
+      },
+      {
+        "name": "Component rendering errors",
+        "fullName": "Comprehensive Error Scenario Logging Tests Component Error Patterns Component rendering errors",
+        "status": "passed",
+        "duration": 23,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 0
+      },
+      {
+        "name": "useSmartphones hook with API failure",
+        "fullName": "Comprehensive Error Scenario Logging Tests Hook Error Patterns useSmartphones hook with API failure",
+        "status": "passed",
+        "duration": 11,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "useSmartphones hook with invalid data format",
+        "fullName": "Comprehensive Error Scenario Logging Tests Hook Error Patterns useSmartphones hook with invalid data format",
+        "status": "passed",
+        "duration": 12,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      },
+      {
+        "name": "logError with Error object",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logError with Error object",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logError with non-Error object",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logError with non-Error object",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logWarn function",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logWarn function",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logInfo function",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logInfo function",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logDebug function in development",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logDebug function in development",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logApiRequest function",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logApiRequest function",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "logApiResponse function",
+        "fullName": "Comprehensive Error Scenario Logging Tests Logger Function Direct Tests logApiResponse function",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 1
+      },
+      {
+        "name": "Logs disabled in test environment",
+        "fullName": "Comprehensive Error Scenario Logging Tests Environment-specific Behavior Logs disabled in test environment",
+        "status": "passed",
+        "duration": 0,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 4
+      },
+      {
+        "name": "Debug logs only in development",
+        "fullName": "Comprehensive Error Scenario Logging Tests Environment-specific Behavior Debug logs only in development",
+        "status": "passed",
+        "duration": 1,
+        "file": "comprehensive-error-scenarios.test.tsx",
+        "failureMessages": [],
+        "assertions": 2
+      }
+    ]
+  },
+  "coverage": {
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0
+  },
+  "timestamp": "2025-08-07T04:45:12.318Z",
+  "executionTime": {
+    "unit": 0,
+    "integration": 0,
+    "e2e": 0,
+    "error": 0
+  },
+  "totalTestCases": 0,
+  "overallStatus": "unknown"
+}
