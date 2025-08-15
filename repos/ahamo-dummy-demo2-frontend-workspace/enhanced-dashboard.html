@@ -1,0 +1,3860 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>フロントエンド試験実装詳細ダッシュボード - 自動更新対応</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .auto-update-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin-top: 10px;
+      }
+      .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      .status-dot.success {
+        background: #4caf50;
+      }
+      .status-dot.failed {
+        background: #f44336;
+      }
+      .status-dot.running {
+        background: #ff9800;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+      .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .stat-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+      }
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+      .stat-details {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+      }
+      .stat-detail {
+        text-align: center;
+      }
+      .stat-detail-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      .stat-detail-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+      .passed {
+        color: #4caf50;
+      }
+      .failed {
+        color: #f44336;
+      }
+
+      .test-sections {
+        display: grid;
+        gap: 25px;
+      }
+      .test-section {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+      .section-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      .section-stats {
+        display: flex;
+        gap: 20px;
+      }
+      .section-stat {
+        text-align: center;
+      }
+      .section-stat-number {
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      .section-stat-label {
+        font-size: 0.8rem;
+        opacity: 0.9;
+      }
+
+      .section-content {
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .section-content.expanded {
+        max-height: 2000px;
+        padding: 20px;
+      }
+      .test-case {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+      }
+      .test-case:last-child {
+        border-bottom: none;
+      }
+      .test-case-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .test-case-name {
+        font-weight: 600;
+        color: #333;
+        flex: 1;
+      }
+      .test-case-status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      .test-case-status.passed {
+        background: #e8f5e8;
+        color: #2e7d32;
+      }
+      .test-case-status.failed {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .test-case-details {
+        font-size: 0.9rem;
+        color: #666;
+        display: flex;
+        gap: 15px;
+      }
+
+      .last-updated {
+        text-align: center;
+        color: white;
+        margin-top: 30px;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+      .search-filter {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      .search-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>フロントエンド試験実装詳細ダッシュボード</h1>
+        <div class="auto-update-indicator">
+          <div class="status-dot success"></div>
+          <span>自動更新対応 - 最終更新: 2025/8/7 4:45:12</span>
+        </div>
+      </div>
+
+      <div class="search-filter">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="テストケース名で検索..."
+          id="searchInput"
+        />
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-title">総テストケース数</div>
+          </div>
+          <div class="stat-number">278</div>
+          <div class="stat-details">
+            <div class="stat-detail">
+              <div class="stat-detail-number passed">278</div>
+              <div class="stat-detail-label">成功</div>
+            </div>
+            <div class="stat-detail">
+              <div class="stat-detail-number failed">0</div>
+              <div class="stat-detail-label">失敗</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-title">単体テスト</div>
+          </div>
+          <div class="stat-number">253</div>
+          <div class="stat-details">
+            <div class="stat-detail">
+              <div class="stat-detail-number passed">253</div>
+              <div class="stat-detail-label">成功</div>
+            </div>
+            <div class="stat-detail">
+              <div class="stat-detail-number failed">0</div>
+              <div class="stat-detail-label">失敗</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-title">統合テスト</div>
+          </div>
+          <div class="stat-number">0</div>
+          <div class="stat-details">
+            <div class="stat-detail">
+              <div class="stat-detail-number passed">0</div>
+              <div class="stat-detail-label">成功</div>
+            </div>
+            <div class="stat-detail">
+              <div class="stat-detail-number failed">0</div>
+              <div class="stat-detail-label">失敗</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-title">E2Eテスト</div>
+          </div>
+          <div class="stat-number">0</div>
+          <div class="stat-details">
+            <div class="stat-detail">
+              <div class="stat-detail-number passed">0</div>
+              <div class="stat-detail-label">成功</div>
+            </div>
+            <div class="stat-detail">
+              <div class="stat-detail-number failed">0</div>
+              <div class="stat-detail-label">失敗</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-sections">
+        <div class="test-section">
+          <div class="section-header">
+            <div class="section-title">単体テスト</div>
+            <div class="section-stats">
+              <div class="section-stat">
+                <div class="section-stat-number">253</div>
+                <div class="section-stat-label">総数</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number passed">253</div>
+                <div class="section-stat-label">成功</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number failed">0</div>
+                <div class="section-stat-label">失敗</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">シミュレーションタイトルと基本情報を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 57ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">全オプション込みの総額を正しく計算する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">データプランのみで総額を正しく計算する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 22ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">選択されたプランの詳細を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 8ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">nullオプションを適切に処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ユニバーサルサービス料と中継サービス料を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">料金が0円の場合は音声オプションを表示しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">料金が0円より大きい場合は音声オプションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">料金が0円の場合は海外通話オプションを表示しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  料金が0円より大きい場合は海外通話オプションを表示する
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">データ内の欠損オプションを適切に処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">価格をカンマ区切りで正しくフォーマットする</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PriceSimulation.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォン情報を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 51ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">セールラベルが存在する場合に表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">セールラベルが存在しない場合は表示しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 14ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">利用可能な場合にカラーオプションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 54ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラー選択を処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 26ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">機能リストを表示する（2つまで）</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">説明が存在する場合に表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクションボタンを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 22ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なアクセシビリティ属性を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">水平レイアウト構造を使用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラー選択のキーボードナビゲーションを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneListCard.test.tsx</span>
+                <span>実行時間: 15ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">propsからスマートフォンを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 60ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders smartphones from API when no props provided
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 22ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ローディング状態を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">エラー状態を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  スマートフォンが利用できない場合は空の状態を表示する
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">次のボタンナビゲーションを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 21ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">前のボタンナビゲーションを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ドットインジケーターナビゲーションを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 83ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">自動再生トグルを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 16ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">自動再生ボタンを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォンの詳細を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCarousel.test.tsx</span>
+                <span>実行時間: 17ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォン情報を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 89ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ローディング状態を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 48ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  スマートフォンが見つからない場合はエラー状態を表示する
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">戻るボタンのクリックを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 52ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">支払いオプションセクションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 89ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラーが利用可能な場合はカラーセレクターを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 17ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">機能セクションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 22ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">eSIMセクションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 21ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">下取りセクションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 16ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクセサリーグリッドを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 17ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">申し込みボタンを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 14ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">URLスラッグからデバイスIDを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 14ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">直接デバイスIDを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceDetailPage.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">タイトルとオプションを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">選択されたオプションをハイライトする</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 62ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  オプションがクリックされたときonOptionSelectを呼び出す
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 18ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">オプションが提供されない場合は空の状態を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">selectedOptionがnullの場合は選択なしを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 42ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders options without displaying price information
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しいタイトルでSelectionStepを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">クリックイベントを正しく処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: OptionSelector.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">blueバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 8ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">greenバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">orangeバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムclassNameが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">タイトルとサブタイトルが中央揃えで表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  書類名がアイコンエリアとキャプションの両方に表示される
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アイコンエリアが正しいサイズで表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DocumentCard.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォン情報を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">セールラベルが存在する場合に表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">セールラベルが存在しない場合は表示しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has5Gがtrueの場合は5Gバッジを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has5Gがfalseの場合は5Gバッジを表示しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">利用可能な場合にカラーオプションを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 33ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラー選択を処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 18ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">機能リストを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 19ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">説明が存在する場合に表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクションボタンを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なアクセシビリティ属性を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneCard.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">blueバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">greenバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">purpleバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">amberバリアントが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムclassNameが正しく適用される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">複雑な子要素が正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: InfoCard.test.tsx</span>
+                <span>実行時間: 21ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">エラーメッセージを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 25ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デフォルトの背景グラデーションを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタム背景グラデーションを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なアクセシビリティ属性を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">エラーテキストを赤色で表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">SectionContainer内で表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">フルスクリーンレイアウトを持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">コンテンツを適切に中央配置する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">長いエラーメッセージを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">空のエラーメッセージを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ErrorMessage.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 56ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ナビゲーションボタンが表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 84ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">次へボタンをクリックすると次のスライドに移動する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 82ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">前へボタンをクリックすると前のスライドに移動する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 54ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ドットインジケーターが正しい数表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 55ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ドットをクリックすると対応するスライドに移動する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 44ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">自動再生トグルボタンが表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">自動再生トグルボタンをクリックすると状態が変わる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 18ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">自動再生が有効な場合、時間経過でスライドが変わる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">手動操作後は自動再生が一時停止される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 55ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  最後のスライドから次へ移動すると最初のスライドに戻る
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 69ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  最初のスライドから前へ移動すると最後のスライドに移動する
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCarousel.test.tsx</span>
+                <span>実行時間: 42ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デフォルトアクセサリーを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 19ms</span>
+                <span>アサーション: 9</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">提供された場合はカスタムアクセサリーを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 7</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">絵文字アイコンを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なグリッドレイアウト構造を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクセサリーカードにホバー効果を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders empty grid when empty accessories array provided
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AccessoryGrid.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ヘッダー要素を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 37ms</span>
+                <span>アサーション: 6</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しいナビゲーションリンクを持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 87ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">モバイルメニューを正しく切り替える</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  ナビゲーションリンクがクリックされたときモバイルメニューを閉じる
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  ハンバーガーメニューアイコンを正しくアニメーションする
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 8ms</span>
+                <span>アサーション: 6</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デスクトップナビゲーション要素を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なアクセシビリティ属性を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しいスタイリングクラスを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: header.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">支払いオプションを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">選択されたオプションをハイライトする</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  オプションがクリックされたときonOptionSelectを呼び出す
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">キーボードナビゲーションを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">オプションが提供されない場合は空の状態を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PaymentOptionSelector.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォンオプションを正常に取得する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphoneOptions.test.tsx</span>
+                <span>実行時間: 56ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">APIエラーを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphoneOptions.test.tsx</span>
+                <span>実行時間: 54ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ネットワークエラーを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphoneOptions.test.tsx</span>
+                <span>実行時間: 54ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">deviceIdが空の場合は取得しない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphoneOptions.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">deviceIdが変更されたときに再取得する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphoneOptions.test.tsx</span>
+                <span>実行時間: 107ms</span>
+                <span>アサーション: 8</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラーオプションを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 17ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">選択されたカラーをハイライトする</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラーがクリックされたときonColorSelectを呼び出す</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しい背景色を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 23ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カラーが提供されない場合はnullを返す</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">colorsがundefinedの場合はnullを返す</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ColorSelector.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デフォルトメッセージで表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 23ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムメッセージで表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デフォルトの背景グラデーションを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタム背景グラデーションを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">デフォルトスピナー色を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムスピナー色を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">適切なアクセシビリティ属性を持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 23ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">回転アニメーションを持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">SectionContainer内で表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">フルスクリーンレイアウトを持つ</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: LoadingSpinner.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">機能と仕様を正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 15ms</span>
+                <span>アサーション: 7</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders only features when specifications not provided
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders only specifications when features not provided
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 8ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">コンテンツが提供されない場合はnullを返す</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">空の配列が提供された場合はnullを返す</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  uses different bullet colors for features and specifications
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: FeatureList.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">メインコンテンツを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 10ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">見出しとテキストを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクションボタンを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">キャンペーンカルーセルコンポーネントを表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">レスポンシブレイアウトクラスを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 21ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">グラデーションスタイリングを正しく適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: MainContent.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 53ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  compactプロパティがtrueの場合、小さいサイズでレンダリングされる
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  compactプロパティがfalseの場合、通常サイズでレンダリングされる
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">imageUrlがない場合でも正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">詳細ボタンがクリック可能である</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 31ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">NEWバッジが表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">キャンペーン画像プレースホルダーが表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CampaignCard.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders additional content correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 27ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders smartphone carousel component</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 7ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders product list button</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 8ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders campaign section</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders reasons section</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 19ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders bonus section</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">グラデーションスタイリングを正しく適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: AdditionalContent.test.tsx</span>
+                <span>実行時間: 10ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">スマートフォンを正常に取得する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphones.test.tsx</span>
+                <span>実行時間: 64ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">APIエラーを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphones.test.tsx</span>
+                <span>実行時間: 54ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should fetch single smartphone successfully</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphones.test.tsx</span>
+                <span>実行時間: 59ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should handle smartphone not found</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: useSmartphones.test.tsx</span>
+                <span>実行時間: 52ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders footer correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 21ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders section headers correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders link items correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 10ms</span>
+                <span>アサーション: 9</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">著作権情報を表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has correct href attributes for links</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 76ms</span>
+                <span>アサーション: 10</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">レスポンシブレイアウトクラスを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: Footer.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">プロモーションバナーを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders promotion title and text correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 14ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders promotion badges correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">グラデーションスタイリングを正しく適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders animation elements</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">applies responsive text styling</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PromotionBanner.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders trade-in section content correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: TradeInSection.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 7</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">highlights point reward with orange color</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: TradeInSection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: TradeInSection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has proper card structure</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: TradeInSection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders with children</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SectionContainer.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">applies default container classes</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SectionContainer.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SectionContainer.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders as different HTML elements</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SectionContainer.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">defaults to div element</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SectionContainer.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders with children</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: GradientButton.test.tsx</span>
+                <span>実行時間: 34ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: GradientButton.test.tsx</span>
+                <span>実行時間: 18ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">クリックイベントを処理する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: GradientButton.test.tsx</span>
+                <span>実行時間: 5ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">applies size classes correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: GradientButton.test.tsx</span>
+                <span>実行時間: 10ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">applies gradient background classes</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: GradientButton.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders eSIM section content correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ESIMSection.test.tsx</span>
+                <span>実行時間: 20ms</span>
+                <span>アサーション: 7</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders emoji icons</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ESIMSection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">カスタムクラス名を適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ESIMSection.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has proper structure with grid layout</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ESIMSection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders navigation buttons correctly when flow is incomplete
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: NavigationButtons.test.tsx</span>
+                <span>実行時間: 22ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">
+                  renders navigation buttons correctly when flow is complete
+                </div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: NavigationButtons.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">レスポンシブレイアウトクラスを適用する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: NavigationButtons.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">アクションボタンを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ActionButtons.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders both buttons correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ActionButtons.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">applies correct styling to buttons</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ActionButtons.test.tsx</span>
+                <span>実行時間: 19ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">has responsive container layout</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ActionButtons.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders phone number selection correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PhoneNumberSelection.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays new number option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PhoneNumberSelection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays keep current number option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: PhoneNumberSelection.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders device selection correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceSelection.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays smartphone purchase option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceSelection.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays SIM only option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: DeviceSelection.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: button.test.tsx</span>
+                <span>実行時間: 13ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">クリック時にonClickが呼び出される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: button.test.tsx</span>
+                <span>実行時間: 29ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">無効状態では操作できない</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: button.test.tsx</span>
+                <span>実行時間: 20ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders SIM selection correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SimSelection.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays eSIM option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SimSelection.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays physical SIM option correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SimSelection.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should return mock data when API fails</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should filter smartphones by iPhone brand</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should filter smartphones by Android brand</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should handle pagination correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should handle HTTP error responses</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should handle invalid JSON response</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should return smartphone data for valid ID</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 303ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should return error for non-existent ID</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 302ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should log API requests and responses</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 303ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should return smartphone options successfully</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 301ms</span>
+                <span>アサーション: 5</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should handle errors gracefully</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">should include delay in response</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: api.test.ts</span>
+                <span>実行時間: 302ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders smartphone type selection correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: SmartphoneTypeSelection.test.tsx</span>
+                <span>実行時間: 9ms</span>
+                <span>アサーション: 3</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders success message correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ResultMessage.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">エラーメッセージを正しく表示する</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ResultMessage.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders info message correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: ResultMessage.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">renders carrier selection correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CarrierSelection.test.tsx</span>
+                <span>実行時間: 4ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">displays carrier options correctly</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: CarrierSelection.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しくレンダリングされる</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: contact-form.test.tsx</span>
+                <span>実行時間: 28ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">バリデーションエラーが表示される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: contact-form.test.tsx</span>
+                <span>実行時間: 46ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">正しい値でフォームが送信される</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: contact-form.test.tsx</span>
+                <span>実行時間: 156ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="test-section">
+          <div class="section-header">
+            <div class="section-title">統合テスト</div>
+            <div class="section-stats">
+              <div class="section-stat">
+                <div class="section-stat-number">0</div>
+                <div class="section-stat-label">総数</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number passed">0</div>
+                <div class="section-stat-label">成功</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number failed">0</div>
+                <div class="section-stat-label">失敗</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-content"></div>
+        </div>
+
+        <div class="test-section">
+          <div class="section-header">
+            <div class="section-title">E2Eテスト</div>
+            <div class="section-stats">
+              <div class="section-stat">
+                <div class="section-stat-number">0</div>
+                <div class="section-stat-label">総数</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number passed">0</div>
+                <div class="section-stat-label">成功</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number failed">0</div>
+                <div class="section-stat-label">失敗</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-content"></div>
+        </div>
+
+        <div class="test-section">
+          <div class="section-header">
+            <div class="section-title">エラーハンドリングテスト</div>
+            <div class="section-stats">
+              <div class="section-stat">
+                <div class="section-stat-number">25</div>
+                <div class="section-stat-label">総数</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number passed">25</div>
+                <div class="section-stat-label">成功</div>
+              </div>
+              <div class="section-stat">
+                <div class="section-stat-number failed">0</div>
+                <div class="section-stat-label">失敗</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ネットワーク接続エラー</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 6ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">HTTP 404 見つかりません</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">HTTP 500 内部サーバーエラー</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">HTTP 503 Service Unavailable</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Invalid JSON response</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Request timeout simulation</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 102ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">フォームバリデーションエラー</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 117ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Form submission network failure</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 31ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">localStorage disabled/unavailable</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 3ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">localStorage quota exceeded</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">localStorage access permission denied</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">ErrorMessage component with error logging</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 2ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Component prop validation errors</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 2ms</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Component rendering errors</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 23ms</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">useSmartphones hook with API failure</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 11ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">useSmartphones hook with invalid data format</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 12ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logError with Error object</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logError with non-Error object</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logWarn function</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logInfo function</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logDebug function in development</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logApiRequest function</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">logApiResponse function</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 1</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Logs disabled in test environment</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 0ms</span>
+                <span>アサーション: 4</span>
+              </div>
+            </div>
+
+            <div class="test-case">
+              <div class="test-case-header">
+                <div class="test-case-name">Debug logs only in development</div>
+                <div class="test-case-status passed">成功</div>
+              </div>
+              <div class="test-case-details">
+                <span>ファイル: comprehensive-error-scenarios.test.tsx</span>
+                <span>実行時間: 1ms</span>
+                <span>アサーション: 2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      class DashboardAutoUpdater {
+        constructor() {
+          this.updateInterval = 30000 // 30秒
+          this.init()
+        }
+
+        init() {
+          this.setupSearch()
+          this.setupSectionToggle()
+          this.startAutoUpdate()
+        }
+
+        setupSearch() {
+          const searchInput = document.getElementById('searchInput')
+          searchInput.addEventListener('input', e => {
+            this.filterTestCases(e.target.value)
+          })
+        }
+
+        setupSectionToggle() {
+          document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+              const content = header.nextElementSibling
+              content.classList.toggle('expanded')
+            })
+          })
+        }
+
+        filterTestCases(searchTerm) {
+          const testCases = document.querySelectorAll('.test-case')
+          testCases.forEach(testCase => {
+            const testName = testCase.querySelector('.test-case-name').textContent.toLowerCase()
+            if (testName.includes(searchTerm.toLowerCase())) {
+              testCase.style.display = 'block'
+            } else {
+              testCase.style.display = 'none'
+            }
+          })
+        }
+
+        async startAutoUpdate() {
+          setInterval(async () => {
+            try {
+              const response = await fetch('test-results-summary.json')
+              if (response.ok) {
+                const data = await response.json()
+                this.updateDashboard(data)
+              }
+            } catch (error) {
+              console.log('自動更新チェック:', error.message)
+            }
+          }, this.updateInterval)
+        }
+
+        updateDashboard(data) {
+          const totalTests =
+            data.unitTests.total +
+            data.integrationTests.total +
+            data.e2eTests.total +
+            data.errorHandlingTests.total
+
+          document.querySelector('.stat-number').textContent = totalTests
+
+          const updateTime = new Date(data.timestamp).toLocaleString('ja-JP')
+          document.querySelector('.auto-update-indicator span').textContent =
+            `自動更新対応 - 最終更新: ${updateTime}`
+
+          const statusDot = document.querySelector('.status-dot')
+          statusDot.className = 'status-dot ' + data.overallStatus
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        new DashboardAutoUpdater()
+      })
+    </script>
+  </body>
+</html>

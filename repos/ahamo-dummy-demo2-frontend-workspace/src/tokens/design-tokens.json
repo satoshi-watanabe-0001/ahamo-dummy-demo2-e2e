@@ -1,0 +1,264 @@
+{
+  "color": {
+    "primary": {
+      "gradient-start": {
+        "value": "#f97316",
+        "type": "color",
+        "description": "Primary gradient start color (orange-500)"
+      },
+      "gradient-end": {
+        "value": "#ef4444",
+        "type": "color",
+        "description": "Primary gradient end color (red-500)"
+      }
+    },
+    "blue": {
+      "50": {
+        "value": "#eff6ff",
+        "type": "color",
+        "description": "Blue background light"
+      },
+      "200": {
+        "value": "#bfdbfe",
+        "type": "color",
+        "description": "Blue border color"
+      },
+      "800": {
+        "value": "#1e40af",
+        "type": "color",
+        "description": "Blue text color"
+      }
+    },
+    "green": {
+      "50": {
+        "value": "#f0fdf4",
+        "type": "color",
+        "description": "Green background light"
+      },
+      "200": {
+        "value": "#bbf7d0",
+        "type": "color",
+        "description": "Green border color"
+      },
+      "800": {
+        "value": "#166534",
+        "type": "color",
+        "description": "Green text color"
+      }
+    },
+    "purple": {
+      "50": {
+        "value": "#faf5ff",
+        "type": "color",
+        "description": "Purple background light"
+      },
+      "200": {
+        "value": "#e9d5ff",
+        "type": "color",
+        "description": "Purple border color"
+      },
+      "800": {
+        "value": "#6b21a8",
+        "type": "color",
+        "description": "Purple text color"
+      }
+    },
+    "amber": {
+      "50": {
+        "value": "#fffbeb",
+        "type": "color",
+        "description": "Amber background light"
+      },
+      "200": {
+        "value": "#fde68a",
+        "type": "color",
+        "description": "Amber border color"
+      },
+      "800": {
+        "value": "#92400e",
+        "type": "color",
+        "description": "Amber text color"
+      }
+    },
+    "orange": {
+      "50": {
+        "value": "#fff7ed",
+        "type": "color",
+        "description": "Orange background light"
+      },
+      "200": {
+        "value": "#fed7aa",
+        "type": "color",
+        "description": "Orange border color"
+      },
+      "800": {
+        "value": "#9a3412",
+        "type": "color",
+        "description": "Orange text color"
+      }
+    },
+    "slate": {
+      "200": {
+        "value": "#e2e8f0",
+        "type": "color",
+        "description": "Slate border color"
+      },
+      "800": {
+        "value": "#1e293b",
+        "type": "color",
+        "description": "Slate dark background"
+      },
+      "900": {
+        "value": "#0f172a",
+        "type": "color",
+        "description": "Slate darkest background"
+      }
+    },
+    "neutral": {
+      "white": {
+        "value": "#ffffff",
+        "type": "color",
+        "description": "White background"
+      },
+      "text-primary": {
+        "value": "#1f2937",
+        "type": "color",
+        "description": "Primary text color"
+      },
+      "text-secondary": {
+        "value": "#6b7280",
+        "type": "color",
+        "description": "Secondary text color"
+      }
+    }
+  },
+  "typography": {
+    "heading": {
+      "h1": {
+        "value": "36px",
+        "type": "fontSizes",
+        "description": "Main heading size (text-4xl)"
+      },
+      "h2": {
+        "value": "48px",
+        "type": "fontSizes",
+        "description": "Large heading size (text-5xl)"
+      },
+      "h3": {
+        "value": "20px",
+        "type": "fontSizes",
+        "description": "Section heading size (text-xl)"
+      },
+      "h4": {
+        "value": "18px",
+        "type": "fontSizes",
+        "description": "Subsection heading size (text-lg)"
+      }
+    },
+    "body": {
+      "large": {
+        "value": "16px",
+        "type": "fontSizes",
+        "description": "Large body text (text-base)"
+      },
+      "medium": {
+        "value": "14px",
+        "type": "fontSizes",
+        "description": "Medium body text (text-sm)"
+      },
+      "small": {
+        "value": "12px",
+        "type": "fontSizes",
+        "description": "Small body text (text-xs)"
+      }
+    },
+    "weight": {
+      "normal": {
+        "value": "400",
+        "type": "fontWeights",
+        "description": "Normal font weight"
+      },
+      "semibold": {
+        "value": "600",
+        "type": "fontWeights",
+        "description": "Semibold font weight"
+      },
+      "bold": {
+        "value": "700",
+        "type": "fontWeights",
+        "description": "Bold font weight"
+      }
+    }
+  },
+  "spacing": {
+    "xs": {
+      "value": "4px",
+      "type": "spacing",
+      "description": "Extra small spacing (p-1)"
+    },
+    "sm": {
+      "value": "8px",
+      "type": "spacing",
+      "description": "Small spacing (p-2)"
+    },
+    "md": {
+      "value": "16px",
+      "type": "spacing",
+      "description": "Medium spacing (p-4)"
+    },
+    "lg": {
+      "value": "24px",
+      "type": "spacing",
+      "description": "Large spacing (p-6)"
+    },
+    "xl": {
+      "value": "32px",
+      "type": "spacing",
+      "description": "Extra large spacing (p-8)"
+    },
+    "2xl": {
+      "value": "64px",
+      "type": "spacing",
+      "description": "2X large spacing (py-16)"
+    }
+  },
+  "borderRadius": {
+    "sm": {
+      "value": "4px",
+      "type": "borderRadius",
+      "description": "Small border radius (rounded-sm)"
+    },
+    "md": {
+      "value": "8px",
+      "type": "borderRadius",
+      "description": "Medium border radius (rounded-lg)"
+    },
+    "lg": {
+      "value": "16px",
+      "type": "borderRadius",
+      "description": "Large border radius (rounded-2xl)"
+    },
+    "xl": {
+      "value": "24px",
+      "type": "borderRadius",
+      "description": "Extra large border radius (rounded-3xl)"
+    }
+  },
+  "shadow": {
+    "sm": {
+      "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      "type": "boxShadow",
+      "description": "Small shadow (shadow-sm)"
+    },
+    "md": {
+      "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+      "type": "boxShadow",
+      "description": "Medium shadow (shadow-md)"
+    },
+    "lg": {
+      "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      "type": "boxShadow",
+      "description": "Large shadow (shadow-lg)"
+    }
+  }
+}

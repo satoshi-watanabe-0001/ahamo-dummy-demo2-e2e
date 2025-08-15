@@ -11,9 +11,9 @@
     "test:user-flows": "playwright test tests/playwright/user-flows",
     "test:api-integration": "playwright test tests/playwright/api-integration",
     "test:cross-service": "playwright test tests/playwright/cross-service",
-    "docker:up": "docker-compose -f docker-compose.e2e.yml up -d",
-    "docker:down": "docker-compose -f docker-compose.e2e.yml down -v",
-    "docker:logs": "docker-compose -f docker-compose.e2e.yml logs -f",
+    "docker:up": "docker compose -f docker-compose.e2e.yml up -d",
+    "docker:down": "docker compose -f docker-compose.e2e.yml down -v",
+    "docker:logs": "docker compose -f docker-compose.e2e.yml logs -f",
     "health-check": "curl -f http://localhost:3000/health && curl -f http://localhost:8080/actuator/health"
   },
   "keywords": [

@@ -1,0 +1,28 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: ahamo-dummy-demo2-api-gateway-service-test
+  
+  cloud:
+    gateway:
+      routes:
+        - id: test-auth-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/v1/auth/**
+
+jwt:
+  secret: dGVzdFNlY3JldEtleUZvckpXVFRva2VuVGVzdGluZ1B1cnBvc2VzMTIzNDU2Nzg5MA==
+
+logging:
+  level:
+    com.ahamo.dummy.demo2.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
