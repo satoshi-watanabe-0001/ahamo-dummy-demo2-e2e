@@ -1,0 +1,54 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-primary-gradient-start: #f97316; /** Primary gradient start color (orange-500) */
+  --color-primary-gradient-end: #ef4444; /** Primary gradient end color (red-500) */
+  --color-blue-50: #eff6ff; /** Blue background light */
+  --color-blue-200: #bfdbfe; /** Blue border color */
+  --color-blue-800: #1e40af; /** Blue text color */
+  --color-green-50: #f0fdf4; /** Green background light */
+  --color-green-200: #bbf7d0; /** Green border color */
+  --color-green-800: #166534; /** Green text color */
+  --color-purple-50: #faf5ff; /** Purple background light */
+  --color-purple-200: #e9d5ff; /** Purple border color */
+  --color-purple-800: #6b21a8; /** Purple text color */
+  --color-amber-50: #fffbeb; /** Amber background light */
+  --color-amber-200: #fde68a; /** Amber border color */
+  --color-amber-800: #92400e; /** Amber text color */
+  --color-orange-50: #fff7ed; /** Orange background light */
+  --color-orange-200: #fed7aa; /** Orange border color */
+  --color-orange-800: #9a3412; /** Orange text color */
+  --color-slate-200: #e2e8f0; /** Slate border color */
+  --color-slate-800: #1e293b; /** Slate dark background */
+  --color-slate-900: #0f172a; /** Slate darkest background */
+  --color-neutral-white: #ffffff; /** White background */
+  --color-neutral-text-primary: #1f2937; /** Primary text color */
+  --color-neutral-text-secondary: #6b7280; /** Secondary text color */
+  --border-radius-sm: 4px; /** Small border radius (rounded-sm) */
+  --border-radius-md: 8px; /** Medium border radius (rounded-lg) */
+  --border-radius-lg: 16px; /** Large border radius (rounded-2xl) */
+  --border-radius-xl: 24px; /** Extra large border radius (rounded-3xl) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); /** Small shadow (shadow-sm) */
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /** Medium shadow (shadow-md) */
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /** Large shadow (shadow-lg) */
+  --spacing-xs: 4px; /** Extra small spacing (p-1) */
+  --spacing-sm: 8px; /** Small spacing (p-2) */
+  --spacing-md: 16px; /** Medium spacing (p-4) */
+  --spacing-lg: 24px; /** Large spacing (p-6) */
+  --spacing-xl: 32px; /** Extra large spacing (p-8) */
+  --spacing-2xl: 64px; /** 2X large spacing (py-16) */
+  --typography-heading-h1: 36px; /** Main heading size (text-4xl) */
+  --typography-heading-h2: 48px; /** Large heading size (text-5xl) */
+  --typography-heading-h3: 20px; /** Section heading size (text-xl) */
+  --typography-heading-h4: 18px; /** Subsection heading size (text-lg) */
+  --typography-body-large: 16px; /** Large body text (text-base) */
+  --typography-body-medium: 14px; /** Medium body text (text-sm) */
+  --typography-body-small: 12px; /** Small body text (text-xs) */
+  --typography-weight-normal: 400; /** Normal font weight */
+  --typography-weight-semibold: 600; /** Semibold font weight */
+  --typography-weight-bold: 700; /** Bold font weight */
+}

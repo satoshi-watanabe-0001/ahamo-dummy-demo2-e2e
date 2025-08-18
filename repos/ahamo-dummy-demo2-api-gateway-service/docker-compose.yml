@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=${JWT_SECRET:-dGVzdFNlY3JldEtleUZvckpXVFRva2VuVGVzdGluZ1B1cnBvc2VzMTIzNDU2Nzg5MA==}
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - ahamo-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ahamo-network
+
+networks:
+  ahamo-network:
+    driver: bridge

@@ -1,0 +1,53 @@
+{
+  "typography": {
+    "heading": {
+      "$type": "fontSize",
+      "h1": {
+        "$value": "36px",
+        "$description": "Main heading size (text-4xl)"
+      },
+      "h2": {
+        "$value": "48px",
+        "$description": "Large heading size (text-5xl)"
+      },
+      "h3": {
+        "$value": "20px",
+        "$description": "Section heading size (text-xl)"
+      },
+      "h4": {
+        "$value": "18px",
+        "$description": "Subsection heading size (text-lg)"
+      }
+    },
+    "body": {
+      "$type": "fontSize",
+      "large": {
+        "$value": "16px",
+        "$description": "Large body text (text-base)"
+      },
+      "medium": {
+        "$value": "14px",
+        "$description": "Medium body text (text-sm)"
+      },
+      "small": {
+        "$value": "12px",
+        "$description": "Small body text (text-xs)"
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "normal": {
+        "$value": "400",
+        "$description": "Normal font weight"
+      },
+      "semibold": {
+        "$value": "600",
+        "$description": "Semibold font weight"
+      },
+      "bold": {
+        "$value": "700",
+        "$description": "Bold font weight"
+      }
+    }
+  }
+}
