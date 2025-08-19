@@ -196,3 +196,4 @@ docker-compose -f docker-compose.e2e.yml up -d
 - [ahamo-dummy-demo2-auth-service](https://github.com/satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service)
 - [ahamo-dummy-demo2-system-design-docs](https://github.com/satoshi-watanabe-0001/ahamo-dummy-demo2-system-design-docs)
 - [sample001](https://github.com/satoshi-watanabe-0001/sample001)
+# CI test after organization setting fix
