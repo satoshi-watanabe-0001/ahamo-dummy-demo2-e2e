@@ -37,16 +37,15 @@ jobs:
           script: |
             const results = '${{ needs.call-e2e-tests.outputs.TEST_RESULTS }}';
             const successRate = '${{ needs.call-e2e-tests.outputs.SUCCESS_RATE }}';
-            
+
             const comment = `## 🧪 E2Eテスト実行結果
-            
+
             **成功率**: ${successRate}%
             **実行環境**: ${{ inputs.ENV }}
             **ブランチ**: ${{ inputs.BRANCH_NAME }}
-            
+
             詳細な結果は[Actionsタブ](${context.payload.repository.html_url}/actions/runs/${context.runId})をご確認ください。
             `;
-            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
