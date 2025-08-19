@@ -1,8 +1,8 @@
-name: E2E Repository PR CI
+name: E2E Repository Push CI
 
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches: [main, 'devin/**']
     paths:
       - 'tests/**'
       - 'playwright.config.ts'
