@@ -85,8 +85,65 @@ jobs:
           npx tsc --noEmit --project tsconfig.json
           echo "✅ TypeScript構文チェック完了"
 
+      - name: Check Required Dockerfiles
+        id: check-dockerfiles
+        run: |
+          echo "=== Dockerfileの存在確認 ==="
+          
+          missing_dockerfiles=()
+          
+          if [ ! -f "repos/ahamo-dummy-demo2-frontend-workspace/Dockerfile.e2e" ]; then
+            echo "❌ フロントエンドのDockerfile.e2eが見つかりません"
+            missing_dockerfiles+=("frontend")
+          else
+            echo "✅ フロントエンドのDockerfile.e2eが存在します"
+          fi
+          
+          if [ ! -f "repos/ahamo-dummy-demo2-api-gateway-service/Dockerfile" ]; then
+            echo "❌ API GatewayのDockerfileが見つかりません"
+            missing_dockerfiles+=("api-gateway")
+          else
+            echo "✅ API GatewayのDockerfileが存在します"
+          fi
+          
+          if [ ! -f "repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service/Dockerfile" ]; then
+            echo "❌ 認証サービスのDockerfileが見つかりません"
+            missing_dockerfiles+=("auth-service")
+          else
+            echo "✅ 認証サービスのDockerfileが存在します"
+          fi
+          
+          if [ ! -f "repos/ahamo-dummy-demo2-product-service/Dockerfile" ]; then
+            echo "❌ 商品サービスのDockerfileが見つかりません"
+            missing_dockerfiles+=("product-service")
+          else
+            echo "✅ 商品サービスのDockerfileが存在します"
+          fi
+          
+          if [ ${#missing_dockerfiles[@]} -gt 0 ]; then
+            echo "missing_dockerfiles=${missing_dockerfiles[*]}" >> $GITHUB_OUTPUT
+            echo "status=missing" >> $GITHUB_OUTPUT
+            
+            echo "❌ 以下のDockerfileが見つかりません:"
+            for service in "${missing_dockerfiles[@]}"; do
+              echo "  - $service"
+            done
+            
+            if [[ " ${missing_dockerfiles[*]} " =~ " auth-service " ]] || [[ " ${missing_dockerfiles[*]} " =~ " product-service " ]] || [[ " ${missing_dockerfiles[*]} " =~ " api-gateway " ]]; then
+              echo "error_source=backend" >> $GITHUB_OUTPUT
+              echo "❌ バックエンドリポジトリの問題: Dockerfileが欠落しています"
+            elif [[ " ${missing_dockerfiles[*]} " =~ " frontend " ]]; then
+              echo "error_source=frontend" >> $GITHUB_OUTPUT
+              echo "❌ フロントエンドリポジトリの問題: Dockerfileが欠落しています"
+            fi
+          else
+            echo "status=ok" >> $GITHUB_OUTPUT
+            echo "✅ すべてのDockerfileが存在します"
+          fi
+
       - name: Start E2E Environment
         id: environment-setup
+        if: steps.check-dockerfiles.outputs.status == 'ok'
         run: |
           echo "=== E2E環境起動開始 ==="
           
@@ -231,26 +288,39 @@ jobs:
           
           error_source="unknown"
           
-          frontend_status="${{ steps.environment-check.outputs.frontend_status }}"
-          api_gateway_status="${{ steps.environment-check.outputs.api_gateway_status }}"
-          auth_status="${{ steps.environment-check.outputs.auth_status }}"
-          
-          if [[ "$frontend_status" == "error" ]]; then
-            error_source="frontend"
-            echo "🔍 エラー原因: フロントエンドリポジトリ"
-            echo "フロントエンドサービスが正常に起動していません"
-          elif [[ "$api_gateway_status" == "error" ]]; then
-            error_source="backend"
-            echo "🔍 エラー原因: バックエンドリポジトリ（API Gateway）"
-            echo "API Gatewayサービスが正常に起動していません"
-          elif [[ "$auth_status" == "error" ]]; then
-            error_source="backend"
-            echo "🔍 エラー原因: バックエンドリポジトリ（認証サービス）"
-            echo "認証サービスが正常に起動していません"
+          if [[ "${{ steps.check-dockerfiles.outputs.status }}" == "missing" ]]; then
+            error_source="${{ steps.check-dockerfiles.outputs.error_source }}"
+            
+            if [[ "$error_source" == "backend" ]]; then
+              echo "🔍 エラー原因: バックエンドリポジトリ"
+              echo "バックエンドサービスのDockerfileが見つかりません"
+              echo "欠落しているDockerfile: ${{ steps.check-dockerfiles.outputs.missing_dockerfiles }}"
+            elif [[ "$error_source" == "frontend" ]]; then
+              echo "🔍 エラー原因: フロントエンドリポジトリ"
+              echo "フロントエンドのDockerfileが見つかりません"
+            fi
           else
-            error_source="e2e"
-            echo "🔍 エラー原因: E2Eテストリポジトリ"
-            echo "サービスは正常ですが、E2Eテストに問題があります"
+            frontend_status="${{ steps.environment-check.outputs.frontend_status }}"
+            api_gateway_status="${{ steps.environment-check.outputs.api_gateway_status }}"
+            auth_status="${{ steps.environment-check.outputs.auth_status }}"
+            
+            if [[ "$frontend_status" == "error" ]]; then
+              error_source="frontend"
+              echo "🔍 エラー原因: フロントエンドリポジトリ"
+              echo "フロントエンドサービスが正常に起動していません"
+            elif [[ "$api_gateway_status" == "error" ]]; then
+              error_source="backend"
+              echo "🔍 エラー原因: バックエンドリポジトリ（API Gateway）"
+              echo "API Gatewayサービスが正常に起動していません"
+            elif [[ "$auth_status" == "error" ]]; then
+              error_source="backend"
+              echo "🔍 エラー原因: バックエンドリポジトリ（認証サービス）"
+              echo "認証サービスが正常に起動していません"
+            else
+              error_source="e2e"
+              echo "🔍 エラー原因: E2Eテストリポジトリ"
+              echo "サービスは正常ですが、E2Eテストに問題があります"
+            fi
           fi
           
           echo "source=$error_source" >> $GITHUB_OUTPUT
@@ -311,21 +381,20 @@ jobs:
             } else {
               comment += `### ❌ テスト失敗\n\n`;
               
-              if (environmentStatus === 'unhealthy') {
-                comment += `**環境ステータス**: 異常\n\n`;
-                
-                if (errorSource === 'frontend') {
-                  comment += `🔍 **エラー原因**: フロントエンドリポジトリ\n`;
-                  comment += `フロントエンドサービスが正常に起動していません。\n`;
-                  comment += `フロントエンドリポジトリの修正が必要です。\n\n`;
-                } else if (errorSource === 'backend') {
-                  comment += `🔍 **エラー原因**: バックエンドリポジトリ\n`;
-                  comment += `バックエンドサービス（API Gateway または認証サービス）が正常に起動していません。\n`;
-                  comment += `バックエンドリポジトリの修正が必要です。\n\n`;
-                } else {
-                  comment += `🔍 **エラー原因**: E2Eテストリポジトリ\n`;
-                  comment += `E2Eテストまたは環境設定に問題があります。\n\n`;
-                }
+              if (errorSource === 'frontend') {
+                comment += `**環境ステータス**: 異常\n`;
+                comment += `🔍 **エラー原因**: フロントエンドリポジトリ\n`;
+                comment += `フロントエンドサービスが正常に起動していないか、必要なDockerfileが見つかりません。\n`;
+                comment += `フロントエンドリポジトリの修正が必要です。\n\n`;
+              } else if (errorSource === 'backend') {
+                comment += `**環境ステータス**: 異常\n`;
+                comment += `🔍 **エラー原因**: バックエンドリポジトリ\n`;
+                comment += `バックエンドサービス（API Gateway、認証サービス、または商品サービス）が正常に起動していないか、必要なDockerfileが見つかりません。\n`;
+                comment += `バックエンドリポジトリの修正が必要です。\n\n`;
+              } else if (environmentStatus === 'unhealthy') {
+                comment += `**環境ステータス**: 異常\n`;
+                comment += `🔍 **エラー原因**: E2Eテストリポジトリ\n`;
+                comment += `E2Eテストまたは環境設定に問題があります。\n\n`;
               } else {
                 comment += `**環境ステータス**: 正常\n`;
                 comment += `🔍 **エラー原因**: E2Eテストリポジトリ\n`;
