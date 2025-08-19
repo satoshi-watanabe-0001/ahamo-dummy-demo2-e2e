@@ -15,6 +15,7 @@ permissions:
   actions: read
   pull-requests: write
   issues: write
+  checks: write
   repository-projects: read
   metadata: read
   packages: read
