@@ -89,46 +89,46 @@ jobs:
         id: check-dockerfiles
         run: |
           echo "=== Dockerfileの存在確認 ==="
-          
+
           missing_dockerfiles=()
-          
+
           if [ ! -f "repos/ahamo-dummy-demo2-frontend-workspace/Dockerfile.e2e" ]; then
             echo "❌ フロントエンドのDockerfile.e2eが見つかりません"
             missing_dockerfiles+=("frontend")
           else
             echo "✅ フロントエンドのDockerfile.e2eが存在します"
           fi
-          
+
           if [ ! -f "repos/ahamo-dummy-demo2-api-gateway-service/Dockerfile" ]; then
             echo "❌ API GatewayのDockerfileが見つかりません"
             missing_dockerfiles+=("api-gateway")
           else
             echo "✅ API GatewayのDockerfileが存在します"
           fi
-          
+
           if [ ! -f "repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service/Dockerfile" ]; then
             echo "❌ 認証サービスのDockerfileが見つかりません"
             missing_dockerfiles+=("auth-service")
           else
             echo "✅ 認証サービスのDockerfileが存在します"
           fi
-          
+
           if [ ! -f "repos/ahamo-dummy-demo2-product-service/Dockerfile" ]; then
             echo "❌ 商品サービスのDockerfileが見つかりません"
             missing_dockerfiles+=("product-service")
           else
             echo "✅ 商品サービスのDockerfileが存在します"
           fi
-          
+
           if [ ${#missing_dockerfiles[@]} -gt 0 ]; then
             echo "missing_dockerfiles=${missing_dockerfiles[*]}" >> $GITHUB_OUTPUT
             echo "status=missing" >> $GITHUB_OUTPUT
-            
+
             echo "❌ 以下のDockerfileが見つかりません:"
             for service in "${missing_dockerfiles[@]}"; do
               echo "  - $service"
             done
-            
+
             if [[ " ${missing_dockerfiles[*]} " =~ " auth-service " ]] || [[ " ${missing_dockerfiles[*]} " =~ " product-service " ]] || [[ " ${missing_dockerfiles[*]} " =~ " api-gateway " ]]; then
               echo "error_source=backend" >> $GITHUB_OUTPUT
               echo "❌ バックエンドリポジトリの問題: Dockerfileが欠落しています"
@@ -146,7 +146,7 @@ jobs:
         if: steps.check-dockerfiles.outputs.status == 'ok'
         run: |
           echo "=== E2E環境起動開始 ==="
-          
+
           if docker-compose -f docker-compose.e2e.yml build; then
             echo "✅ Docker build成功"
             build_status="success"
@@ -156,7 +156,7 @@ jobs:
             echo "build_status=failed" >> $GITHUB_OUTPUT
             exit 1
           fi
-          
+
           if docker-compose -f docker-compose.e2e.yml up -d; then
             echo "✅ Docker compose up成功"
             compose_status="success"
