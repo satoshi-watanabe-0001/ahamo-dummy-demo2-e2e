@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('アクセサリーと下取りセクション', () => {
   test('おすすめアクセサリー表示確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const accessorySection = page.getByText('おすすめアクセサリー').or(
       page.getByText('アクセサリー')
@@ -39,7 +39,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('下取りプログラム情報表示', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const tradeInSection = page.getByText('機種変更をお考えの方').or(
       page.getByText('下取り')
@@ -71,7 +71,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('アクセサリーグリッドレイアウト確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const accessoryGrid = page.locator('.grid').filter({ hasText: 'ケース' }).or(
       page.locator('[class*="grid"]').filter({ hasText: 'アクセサリー' })
@@ -97,7 +97,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('下取りセクションの詳細情報確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const tradeInDetails = page.locator('text=下取り').locator('..')
     
@@ -125,7 +125,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('アクセサリー価格表示確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const pricePattern = /\d+[,.]?\d*円/
     const priceElements = page.locator(`text=${pricePattern}`)
@@ -150,7 +150,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('アクセサリーホバー効果確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const accessoryItems = page.locator('[class*="hover"], .hover\\:shadow')
     
@@ -173,7 +173,7 @@ test.describe('アクセサリーと下取りセクション', () => {
   })
   
   test('下取りプログラムアイコン表示確認', async ({ page }) => {
-    await page.goto('/smartphones/iphone')
+    await page.goto('/smartphones/iphone16e')
     
     const tradeInSection = page.getByText('下取り').locator('..')
     

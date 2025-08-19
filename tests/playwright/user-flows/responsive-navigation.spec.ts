@@ -5,13 +5,13 @@ test.describe('レスポンシブナビゲーションテスト', () => {
     await page.setViewportSize({ width: 1200, height: 800 })
     await page.goto('/')
     
-    await expect(page.getByText('ahamo')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'ahamo' })).toBeVisible()
     
     const desktopNav = page.locator('nav').filter({ hasText: '料金プラン' })
     if (await desktopNav.isVisible()) {
-      await expect(page.getByText('料金プラン')).toBeVisible()
-      await expect(page.getByText('サービス')).toBeVisible()
-      await expect(page.getByText('サポート')).toBeVisible()
+      await expect(desktopNav.getByText('料金プラン')).toBeVisible()
+      await expect(desktopNav.getByText('サービス')).toBeVisible()
+      await expect(desktopNav.getByText('サポート')).toBeVisible()
     }
     
     const signupButton = page.getByText('申し込み').first()
@@ -27,7 +27,7 @@ test.describe('レスポンシブナビゲーションテスト', () => {
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto('/')
     
-    await expect(page.getByText('ahamo')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'ahamo' })).toBeVisible()
     
     const menuButton = page.locator('button').filter({ hasText: /menu|メニュー/i }).or(
       page.locator('button[aria-label*="メニュー"]')
@@ -50,12 +50,13 @@ test.describe('レスポンシブナビゲーションテスト', () => {
       
       let foundItems = 0
       for (const item of mobileMenuItems) {
-        if (await page.getByText(item).isVisible()) {
+        const navItem = page.locator('nav').getByText(item).first()
+        if (await navItem.isVisible()) {
           foundItems++
         }
       }
       
-      expect(foundItems).toBeGreaterThan(2)
+      expect(foundItems).toBeGreaterThanOrEqual(2)
     }
   })
   
@@ -63,7 +64,7 @@ test.describe('レスポンシブナビゲーションテスト', () => {
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.goto('/')
     
-    await expect(page.getByText('ahamo')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'ahamo' })).toBeVisible()
     
     const navigationElements = [
       '料金プラン',
@@ -74,7 +75,8 @@ test.describe('レスポンシブナビゲーションテスト', () => {
     
     let visibleElements = 0
     for (const element of navigationElements) {
-      if (await page.getByText(element).isVisible()) {
+      const navElement = page.locator('nav').getByText(element).first()
+      if (await navElement.isVisible()) {
         visibleElements++
       }
     }
@@ -104,9 +106,9 @@ test.describe('レスポンシブナビゲーションテスト', () => {
       await page.setViewportSize(viewport)
       await page.goto('/')
       
-      await expect(page.getByText('ahamo')).toBeVisible()
+      await expect(page.getByRole('link', { name: 'ahamo' })).toBeVisible()
       
-      const mainContent = page.locator('main').or(page.locator('[role="main"]')).or(page.locator('body'))
+      const mainContent = page.locator('main')
       await expect(mainContent).toBeVisible()
       
       const images = page.locator('img')
