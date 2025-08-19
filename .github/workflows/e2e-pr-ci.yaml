@@ -36,7 +36,7 @@ jobs:
           repository: satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace
           ref: main
           path: repos/ahamo-dummy-demo2-frontend-workspace
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Checkout API Gateway Repository
         uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
           repository: satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service
           ref: main
           path: repos/ahamo-dummy-demo2-api-gateway-service
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Checkout Auth Service Repository
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
           repository: satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
           ref: main
           path: repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Install Browser Dependencies
         run: |
