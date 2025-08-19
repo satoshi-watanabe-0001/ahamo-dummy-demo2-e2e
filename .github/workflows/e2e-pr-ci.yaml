@@ -19,6 +19,9 @@ permissions:
   repository-projects: read
   metadata: read
   packages: read
+  repository-projects: read
+  metadata: read
+  packages: read
 
 jobs:
   validate-e2e-tests:
