@@ -1,0 +1,343 @@
+name: E2E Repository PR CI
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'tests/**'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'docker-compose.e2e.yml'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  issues: write
+  checks: write
+
+jobs:
+  validate-e2e-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      environment_status: ${{ steps.environment-check.outputs.status }}
+      test_results: ${{ steps.test-execution.outputs.results }}
+      error_source: ${{ steps.error-analysis.outputs.source }}
+    steps:
+      - name: Checkout E2E Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout Frontend Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-frontend-workspace
+          ref: main
+          path: repos/ahamo-dummy-demo2-frontend-workspace
+          persist-credentials: true
+
+      - name: Checkout API Gateway Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/ahamo-dummy-demo2-api-gateway-service
+          ref: main
+          path: repos/ahamo-dummy-demo2-api-gateway-service
+          persist-credentials: true
+
+      - name: Checkout Auth Service Repository
+        uses: actions/checkout@v4
+        with:
+          repository: satoshi-watanabe-0001/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          ref: main
+          path: repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+          persist-credentials: true
+
+      - name: Install Browser Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgles2-mesa-dev \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libgstreamer-plugins-bad1.0-dev \
+            libgstreamer-plugins-good1.0-dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          npx playwright install
+          sudo npx playwright install-deps
+
+      - name: Lint Test Files
+        run: |
+          echo "=== E2Eテストファイルの構文チェック ==="
+          npx tsc --noEmit --project tsconfig.json
+          echo "✅ TypeScript構文チェック完了"
+
+      - name: Start E2E Environment
+        id: environment-setup
+        run: |
+          echo "=== E2E環境起動開始 ==="
+          
+          if docker-compose -f docker-compose.e2e.yml build; then
+            echo "✅ Docker build成功"
+            build_status="success"
+          else
+            echo "❌ Docker build失敗"
+            build_status="failed"
+            echo "build_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          if docker-compose -f docker-compose.e2e.yml up -d; then
+            echo "✅ Docker compose up成功"
+            compose_status="success"
+          else
+            echo "❌ Docker compose up失敗"
+            compose_status="failed"
+            echo "compose_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          echo "=== サービス起動待機（60秒） ==="
+          sleep 60
+
+      - name: Environment Health Check
+        id: environment-check
+        run: |
+          echo "=== サービスヘルスチェック開始 ==="
+          
+          frontend_status="unknown"
+          api_gateway_status="unknown"
+          auth_status="unknown"
+          
+          if curl -f -s http://localhost:3000/health > /dev/null 2>&1; then
+            echo "✅ フロントエンド正常 (http://localhost:3000)"
+            frontend_status="ok"
+          else
+            echo "❌ フロントエンド異常 (http://localhost:3000)"
+            frontend_status="error"
+            echo "フロントエンドログ:"
+            docker-compose -f docker-compose.e2e.yml logs frontend || true
+          fi
+          
+          if curl -f -s http://localhost:3001/ > /dev/null 2>&1; then
+            echo "✅ API Gateway正常 (http://localhost:3001)"
+            api_gateway_status="ok"
+          else
+            echo "❌ API Gateway異常 (http://localhost:3001)"
+            api_gateway_status="error"
+            echo "API Gatewayログ:"
+            docker-compose -f docker-compose.e2e.yml logs api-gateway || true
+          fi
+          
+          if curl -f -s http://localhost:8080/api/v1/actuator/health > /dev/null 2>&1; then
+            echo "✅ 認証サービス正常 (http://localhost:8080)"
+            auth_status="ok"
+          else
+            echo "❌ 認証サービス異常 (http://localhost:8080)"
+            auth_status="error"
+            echo "認証サービスログ:"
+            docker-compose -f docker-compose.e2e.yml logs auth-service || true
+          fi
+          
+          if [[ "$frontend_status" == "ok" && "$api_gateway_status" == "ok" && "$auth_status" == "ok" ]]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+            echo "✅ 全サービス正常 - E2Eテスト実行可能"
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            echo "❌ サービス異常検出:"
+            echo "  - フロントエンド: $frontend_status"
+            echo "  - API Gateway: $api_gateway_status"
+            echo "  - 認証サービス: $auth_status"
+          fi
+          
+          echo "frontend_status=$frontend_status" >> $GITHUB_OUTPUT
+          echo "api_gateway_status=$api_gateway_status" >> $GITHUB_OUTPUT
+          echo "auth_status=$auth_status" >> $GITHUB_OUTPUT
+
+      - name: Execute E2E Tests
+        id: test-execution
+        if: steps.environment-check.outputs.status == 'healthy'
+        run: |
+          echo "=== E2Eテスト実行開始 ==="
+          
+          test_exit_code=0
+          
+          changed_files=$(git diff --name-only origin/main...HEAD | grep "tests/playwright" | grep "\.spec\.ts$" || true)
+          
+          if [ -n "$changed_files" ]; then
+            echo "変更されたテストファイル:"
+            echo "$changed_files"
+            
+            for test_file in $changed_files; do
+              if [ -f "$test_file" ]; then
+                echo "=== 実行中: $test_file ==="
+                if npx playwright test "$test_file" --reporter=json,html; then
+                  echo "✅ $test_file - 成功"
+                else
+                  echo "❌ $test_file - 失敗"
+                  test_exit_code=1
+                fi
+              fi
+            done
+          else
+            echo "=== 全E2Eテスト実行 ==="
+            if npx playwright test --reporter=json,html; then
+              echo "✅ 全テスト成功"
+            else
+              echo "❌ テスト失敗"
+              test_exit_code=1
+            fi
+          fi
+          
+          if [ -f "test-results/.last-run.json" ]; then
+            total_tests=$(jq -r '.stats.total' test-results/.last-run.json 2>/dev/null || echo "0")
+            passed_tests=$(jq -r '.stats.passed' test-results/.last-run.json 2>/dev/null || echo "0")
+            failed_tests=$(jq -r '.stats.failed' test-results/.last-run.json 2>/dev/null || echo "0")
+            
+            if [ "$total_tests" -gt 0 ]; then
+              success_rate=$(echo "scale=2; $passed_tests * 100 / $total_tests" | bc)
+            else
+              success_rate="0"
+            fi
+          else
+            total_tests="0"
+            passed_tests="0"
+            failed_tests="0"
+            success_rate="0"
+          fi
+          
+          echo "results={\"total\":$total_tests,\"passed\":$passed_tests,\"failed\":$failed_tests,\"success_rate\":\"$success_rate\",\"exit_code\":$test_exit_code}" >> $GITHUB_OUTPUT
+          
+          exit $test_exit_code
+
+      - name: Error Source Analysis
+        id: error-analysis
+        if: failure()
+        run: |
+          echo "=== エラー原因分析 ==="
+          
+          error_source="unknown"
+          
+          frontend_status="${{ steps.environment-check.outputs.frontend_status }}"
+          api_gateway_status="${{ steps.environment-check.outputs.api_gateway_status }}"
+          auth_status="${{ steps.environment-check.outputs.auth_status }}"
+          
+          if [[ "$frontend_status" == "error" ]]; then
+            error_source="frontend"
+            echo "🔍 エラー原因: フロントエンドリポジトリ"
+            echo "フロントエンドサービスが正常に起動していません"
+          elif [[ "$api_gateway_status" == "error" ]]; then
+            error_source="backend"
+            echo "🔍 エラー原因: バックエンドリポジトリ（API Gateway）"
+            echo "API Gatewayサービスが正常に起動していません"
+          elif [[ "$auth_status" == "error" ]]; then
+            error_source="backend"
+            echo "🔍 エラー原因: バックエンドリポジトリ（認証サービス）"
+            echo "認証サービスが正常に起動していません"
+          else
+            error_source="e2e"
+            echo "🔍 エラー原因: E2Eテストリポジトリ"
+            echo "サービスは正常ですが、E2Eテストに問題があります"
+          fi
+          
+          echo "source=$error_source" >> $GITHUB_OUTPUT
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            test-results/
+            playwright-report/
+            *.json
+
+      - name: Cleanup Environment
+        if: always()
+        run: |
+          echo "=== 環境クリーンアップ ==="
+          docker-compose -f docker-compose.e2e.yml down -v || true
+          docker system prune -f || true
+
+  report-results:
+    needs: validate-e2e-tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Generate Test Report Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const environmentStatus = '${{ needs.validate-e2e-tests.outputs.environment_status }}';
+            const testResults = '${{ needs.validate-e2e-tests.outputs.test_results }}';
+            const errorSource = '${{ needs.validate-e2e-tests.outputs.error_source }}';
+            const jobResult = '${{ needs.validate-e2e-tests.result }}';
+            
+            let comment = `## 🧪 E2Eテスト実行結果\n\n`;
+            comment += `**実行日時**: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}\n`;
+            comment += `**ブランチ**: \`${context.payload.pull_request.head.ref}\`\n`;
+            comment += `**コミット**: \`${context.payload.pull_request.head.sha.substring(0, 7)}\`\n\n`;
+            
+            if (jobResult === 'success') {
+              comment += `### ✅ テスト成功\n\n`;
+              
+              if (testResults && testResults !== 'null') {
+                try {
+                  const results = JSON.parse(testResults);
+                  comment += `**テスト結果**:\n`;
+                  comment += `- 総テスト数: ${results.total}\n`;
+                  comment += `- 成功: ${results.passed}\n`;
+                  comment += `- 失敗: ${results.failed}\n`;
+                  comment += `- 成功率: ${results.success_rate}%\n\n`;
+                } catch (e) {
+                  comment += `テスト結果の詳細は[Actionsタブ](${context.payload.repository.html_url}/actions/runs/${context.runId})をご確認ください。\n\n`;
+                }
+              }
+              
+              comment += `すべてのE2Eテストが正常に実行されました。\n`;
+            } else {
+              comment += `### ❌ テスト失敗\n\n`;
+              
+              if (environmentStatus === 'unhealthy') {
+                comment += `**環境ステータス**: 異常\n\n`;
+                
+                if (errorSource === 'frontend') {
+                  comment += `🔍 **エラー原因**: フロントエンドリポジトリ\n`;
+                  comment += `フロントエンドサービスが正常に起動していません。\n`;
+                  comment += `フロントエンドリポジトリの修正が必要です。\n\n`;
+                } else if (errorSource === 'backend') {
+                  comment += `🔍 **エラー原因**: バックエンドリポジトリ\n`;
+                  comment += `バックエンドサービス（API Gateway または認証サービス）が正常に起動していません。\n`;
+                  comment += `バックエンドリポジトリの修正が必要です。\n\n`;
+                } else {
+                  comment += `🔍 **エラー原因**: E2Eテストリポジトリ\n`;
+                  comment += `E2Eテストまたは環境設定に問題があります。\n\n`;
+                }
+              } else {
+                comment += `**環境ステータス**: 正常\n`;
+                comment += `🔍 **エラー原因**: E2Eテストリポジトリ\n`;
+                comment += `サービスは正常に起動していますが、E2Eテストに問題があります。\n\n`;
+              }
+              
+              comment += `詳細なエラーログは[Actionsタブ](${context.payload.repository.html_url}/actions/runs/${context.runId})をご確認ください。\n`;
+            }
+            
+            comment += `\n---\n`;
+            comment += `💡 **注意**: エラー原因がフロントエンド・バックエンドリポジトリにある場合は、該当リポジトリでの修正が必要です。\n`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
