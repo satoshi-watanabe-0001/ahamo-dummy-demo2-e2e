@@ -5,23 +5,36 @@ test.describe('完全なデバイス購入ジャーニー', () => {
     await page.goto('/smartphone-selection')
     await expect(page.getByText('スマホの選択')).toBeVisible()
     
-    const deviceLink = page.getByText('iPhone').or(page.getByText('Android')).first()
-    await deviceLink.click()
+    const iphoneCard = page.getByText('iPhone').locator('..')
+    await expect(iphoneCard).toBeVisible()
+    await iphoneCard.click()
     
-    await page.waitForTimeout(1000)
+    await page.waitForLoadState('networkidle')
     
-    const paymentOptions = page.locator('[role="button"]').filter({ hasText: '円' })
-    if (await paymentOptions.count() > 0) {
-      await paymentOptions.first().click()
+    const iphoneModel = page.getByText('iPhone 16e').or(page.getByText('iPhone 16 Pro')).first()
+    if (await iphoneModel.isVisible()) {
+      await iphoneModel.click()
+      await page.waitForLoadState('networkidle')
     }
     
-    const colorButtons = page.locator('button').filter({ hasText: /色|カラー|Color/i })
-    if (await colorButtons.count() > 0) {
-      await colorButtons.first().click()
+    const paymentOption = page.locator('[data-testid^="payment-option"]').filter({ hasText: '0円' }).first()
+    if (await paymentOption.isVisible()) {
+      await paymentOption.click()
     }
     
-    const applyButton = page.getByText('この機種で申し込む').or(page.getByText('申し込む')).or(page.getByText('次へ'))
-    await applyButton.click()
+    const colorButton = page.getByText('ホワイト').locator('..')
+    if (await colorButton.isVisible()) {
+      await colorButton.click()
+    }
+    
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await page.waitForTimeout(2000)
+    
+    const applyButton = page.getByText('この機種で申し込む')
+    if (await applyButton.isVisible()) {
+      await applyButton.scrollIntoViewIfNeeded()
+      await applyButton.click()
+    }
     
     await page.waitForTimeout(1000)
     
@@ -91,13 +104,26 @@ test.describe('完全なデバイス購入ジャーニー', () => {
     
     await expect(page.getByText('スマホの選択')).toBeVisible()
     
-    const androidLink = page.getByText('Android').or(page.getByText('iPhone')).first()
-    await androidLink.click()
+    const androidCard = page.getByText('Android').locator('..')
+    await expect(androidCard).toBeVisible()
+    await androidCard.click()
     
-    await page.waitForTimeout(1000)
+    await page.waitForLoadState('networkidle')
     
-    const applyButton = page.getByText('この機種で申し込む').or(page.getByText('申し込む'))
-    await applyButton.click()
+    const androidModel = page.getByText('Galaxy').or(page.getByText('Pixel')).or(page.getByText('Xperia')).first()
+    if (await androidModel.isVisible()) {
+      await androidModel.click()
+      await page.waitForLoadState('networkidle')
+    }
+    
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await page.waitForTimeout(2000)
+    
+    const applyButton = page.getByText('この機種で申し込む')
+    if (await applyButton.isVisible()) {
+      await applyButton.scrollIntoViewIfNeeded()
+      await applyButton.click()
+    }
     
     await page.waitForTimeout(1000)
     
@@ -202,23 +228,20 @@ test.describe('完全なデバイス購入ジャーニー', () => {
     
     await page.waitForTimeout(2000)
     
-    const recoveredContent = page.getByText('スマホの選択').or(
-      page.getByText('iPhone')
-    ).or(
-      page.getByText('Android')
-    )
+    const recoveredContent = page.getByRole('heading', { name: 'スマホの選択' })
     
     if (await recoveredContent.isVisible()) {
       await expect(recoveredContent).toBeVisible()
       
-      const deviceLink = page.getByText('iPhone').or(page.getByText('Android')).first()
+      const deviceLink = page.getByRole('heading', { name: 'iPhone' }).or(page.getByRole('heading', { name: 'Android' })).first()
       if (await deviceLink.isVisible()) {
         await deviceLink.click()
+        await page.waitForTimeout(2000)
+        
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
         await page.waitForTimeout(1000)
         
-        const devicePage = page.getByText('この機種で申し込む').or(
-          page.getByText('申し込む')
-        )
+        const devicePage = page.locator('button:has-text("この機種で申し込む")')
         
         if (await devicePage.isVisible()) {
           await expect(devicePage).toBeVisible()
@@ -255,16 +278,14 @@ test.describe('完全なデバイス購入ジャーニー', () => {
     }
     
     await page.goto('/smartphone-selection')
-    const deviceLink = page.getByText('iPhone').first()
+    const deviceLink = page.getByRole('heading', { name: 'iPhone' }).first()
     if (await deviceLink.isVisible()) {
       await deviceLink.click()
     }
     
     await secondDevice.reload()
     
-    const syncedContent = secondDevice.getByText('スマホの選択').or(
-      secondDevice.getByText('iPhone')
-    )
+    const syncedContent = secondDevice.getByRole('heading', { name: 'スマホの選択' })
     
     if (await syncedContent.isVisible()) {
       await expect(syncedContent).toBeVisible()
