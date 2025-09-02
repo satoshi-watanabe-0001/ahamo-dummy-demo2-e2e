@@ -1,16 +1,33 @@
 name: E2E Testing Pipeline
 
 on:
-  push:
-    branches: [main, develop]
-  schedule:
-    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'E2Eテストを強制実行する場合はtrueを入力'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   e2e-testing:
+    if: github.event.inputs.force_run == 'true'
     uses: satoshi-watanabe-0001/sample001/.github/workflows/ci-called.yaml@main
     with:
       ENV: e2e
       REPO_TYPE: e2e
       CONFIG_FILES: ci-config.yaml
     secrets: inherit
+    
+  skip-e2e-testing:
+    if: github.event.inputs.force_run != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip E2E Testing
+        run: |
+          echo "=== E2Eテスト実行スキップ（CI設定により無効化） ==="
+          echo "ℹ️  E2Eテストはローカル環境でのみ実行可能です"
+          echo "ℹ️  手動でE2Eテストを実行する場合は、force_run=trueで再実行してください"
