@@ -1,35 +1,23 @@
 services:
-  # Next.jsフロントエンド
-  frontend:
-    build:
-      context: ./repos/ahamo-dummy-demo2-frontend-workspace
-      dockerfile: Dockerfile.e2e
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://api-gateway:3001
-      - NODE_ENV=test
-    depends_on:
-      - api-gateway
-    networks:
-      - e2e-network
 
   # API Gateway (ポート3001)
   api-gateway:
     build:
-      context: ./repos/ahamo-dummy-demo2-api-gateway-service
+      context: ../ahamo-dummy-demo2-api-gateway-service
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
     environment:
-      - SPRING_PROFILES_ACTIVE=e2e
-      - AUTH_SERVICE_URL=http://auth-service:8081
-      - PRODUCT_SERVICE_URL=http://product-service:8080
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONTENT_SERVICE_URL=http://content-service:8082
+      - APPLICATION_SERVICE_URL=http://application-service:8083
+      - SERVER_PORT=3001
     depends_on:
-      - auth-service
-      - product-service
+      - content-service
+      - application-service
+      - redis
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3001/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -37,19 +25,20 @@ services:
     networks:
       - e2e-network
 
-  # Product Service (ポート8080)
-  product-service:
+  # Content Service (ポート8082)
+  content-service:
     build:
-      context: ./repos/ahamo-dummy-demo2-product-service
+      context: ../ahamo-dummy-demo2-content-service
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=e2e
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/product_service_db
-      - DB_NAME=product_service_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/content_service_db
+      - DB_NAME=content_service_db
       - DB_USERNAME=ahamo_user
       - DB_PASSWORD=ahamo_password
+      - SERVER_PORT=8082
       - SPRING_FLYWAY_VALIDATE_ON_MIGRATE=false
       - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
     depends_on:
@@ -59,26 +48,34 @@ services:
     networks:
       - e2e-network
 
-  # 認証サービス (ポート8081)
-  auth-service:
+  # Application Service (ポート8083)
+  application-service:
     build:
-      context: ./repos/-satoshi-watanabe-0001-ahamo-dummy-demo2-auth-service
+      context: ../ahamo-dummy-demo2-application-service
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=e2e
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auth_service_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/application_service_db
+      - DB_NAME=application_service_db
       - DB_USERNAME=ahamo_user
       - DB_PASSWORD=ahamo_password
-      - JWT_SECRET=myVerySecretJWTKeyForAhamoDummyDemo2AuthService2024
-      - SERVER_PORT=8081
+      - SERVER_PORT=8083
       - SPRING_FLYWAY_VALIDATE_ON_MIGRATE=false
       - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - e2e-network
+
+  # Redis (API Gateway用)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
     networks:
       - e2e-network
 
